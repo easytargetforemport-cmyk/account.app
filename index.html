@@ -910,7 +910,8 @@ function mergeDb(L, R){
 const payload = () => { const p = {v: 1, at: Date.now(), _del: db._del || {}, shared: {name: db.cfg.name, cash0: db.cfg.cash0, m: db.cfgM || 0}}; Object.keys(M).forEach(c => p[c] = db[c]); return p; };
 
 // --- Google ---
-const gs = () => ({id: (db.cfg.gcid || '').trim(), mail: (db.cfg.gmail || '').trim(), on: !!db.cfg.gsync});
+const DEFAULT_CLIENT_ID = '910167402779-d9aj8jqt870lklfnbemu37si4g0q2gk2.apps.googleusercontent.com';   // مش سر: بيتحط جوه البرنامج عشان المستخدم يكتب الإيميل بس
+const gs = () => ({id: (db.cfg.gcid || '').trim() || DEFAULT_CLIENT_ID, mail: (db.cfg.gmail || '').trim(), on: !!db.cfg.gsync});
 function gLoad(){ return new Promise((res, rej) => { if (window.google && google.accounts && google.accounts.oauth2) return res(); const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = () => res(); s.onerror = () => rej(new Error('تعذر تحميل خدمة جوجل (تأكد من الإنترنت)')); document.head.appendChild(s); }); }
 async function gToken(interactive){
   if (gTok && Date.now() < gTokExp - 60000) return gTok;
@@ -956,13 +957,13 @@ async function syncNow(manual){
   } catch (e) { setMsg('⚠️ ' + (e && e.message || e)); }
   syncing = false;
 }
-function gSave(){ db.cfg.gcid = $('gcid').value.trim(); db.cfg.gmail = $('gmail').value.trim(); store(); setMsg('تم الحفظ'); }
+function gSave(){ if ($('gcid')) db.cfg.gcid = $('gcid').value.trim().replace(/\s+/g, ''); db.cfg.gmail = $('gmail').value.trim(); store(); setMsg('تم الحفظ'); }
 function gConnect(){ gSave(); if (!gs().id) return setMsg('⚠️ اكتب Client ID'); db.cfg.gsync = 1; store(); syncNow(true); }
 function gOff(){ db.cfg.gsync = 0; gTok = null; store(); setMsg('تم إيقاف المزامنة (بياناتك على الجهاز زي ما هي)'); render(); }
 function syncSec(){ const c = gs(); return `<h3>☁️ المزامنة بين الأجهزة (Google Drive)</h3>
   <small style="color:var(--m)">بيانات كل واحد بتتحفظ في مساحة مخفية على درايف بتاعه، والجهازين بيتزامنوا تلقائيًا لما يكون فيه إنترنت. تسجيل الدخول للبرنامج يفضل بالاسم وكلمة السر زي ما هو. اللوجو والدخول مش بيتزامنوا.</small>
   <label>الإيميل (Gmail)</label><input id="gmail" type="email" value="${esc(c.mail)}" placeholder="name@gmail.com">
-  <label>Google Client ID</label><input id="gcid" value="${esc(c.id)}" placeholder="xxxx.apps.googleusercontent.com" dir="ltr">
+  <details style="margin:6px 0"><summary style="color:var(--m);cursor:pointer">إعدادات متقدمة (Client ID)</summary><input id="gcid" value="${esc(db.cfg.gcid || '')}" placeholder="سيبه فاضي لاستخدام الافتراضي" dir="ltr"></details>
   <button class="btn p" onclick="gConnect()">🔗 ${c.on ? 'إعادة الاتصال' : 'تفعيل المزامنة'}</button><button class="btn i" onclick="gSave();syncNow(true)">🔄 مزامنة الآن</button>${c.on ? '<button class="btn n" onclick="gOff()">إيقاف</button>' : ''}
   <div id="gmsg" style="margin:6px 0;color:var(--m)">${esc(gMsg || (c.on ? (db.cfg.glast ? 'آخر مزامنة: ' + new Date(db.cfg.glast).toLocaleString('ar-EG') : 'مفعّلة') : 'غير مفعّلة'))}</div><hr>`; }
 window.addEventListener('online', () => syncSoon());
