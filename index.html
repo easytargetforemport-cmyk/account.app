@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>برنامج الحسابات المتكامل</title>
+<meta name="theme-color" content="#1f3a5f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الحسابات">
+
+<link rel="icon" id="fav" href="data:,">
+<style>
+:root{--p:#1f3a5f;--bg:#f2f0ea;--c:#fff;--t:#1d2733;--m:#6b7280;--bd:#d9d4c7;--g:#c9a24b}
+[data-t=d]{--bg:#10151c;--c:#1a222d;--t:#e6e8eb;--m:#9aa5b1;--bd:#2f3a48;--p:#7fa6d6}
+*{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--t);display:flex;min-height:100vh}
+.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
+.side{width:230px;background:#14283f;color:#fff;padding:14px 10px;flex-shrink:0;height:100vh;position:sticky;top:0;overflow-y:auto}
+.side h2{font-size:17px;margin:4px 8px 10px;border-bottom:1px solid #2c4666;padding-bottom:10px}
+.side small{display:block;color:var(--g);font-size:11px;margin:14px 8px 4px}
+.side a{display:flex;gap:8px;align-items:center;padding:9px 10px;border-radius:4px;color:#d6dfeb;cursor:pointer;font-size:14px}
+.side a:hover{background:#22405f}.side a.on{background:#f3efe4;color:#14283f;font-weight:700}
+.top{display:none}
+.main{flex:1;padding:20px;min-width:0}
+.bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+h1{margin:0;font-size:21px;color:var(--p)}h3{margin:0 0 10px}
+label{font-size:13px;color:var(--m)}
+.btn{border:0;padding:8px 14px;border-radius:4px;color:#fff;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center;margin:1px}
+.btn:hover{opacity:.88}.btn.sm{padding:5px 9px;font-size:12px}
+.p{background:var(--p)}[data-t=d] .p{color:#10151c}.s{background:#2e7d32}.d{background:#b3261e}.w{background:#a87a12}.i{background:#2c6b8f}.n{background:#6b7280}
+input,select{padding:9px;width:100%;border:1px solid var(--bd);border-radius:4px;margin-bottom:10px;background:var(--c);color:var(--t);font-size:14px}
+.tw{overflow-x:auto;background:var(--c);border:1px solid var(--bd);border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{background:var(--p);color:#fff}[data-t=d] th{color:#10151c}
+tbody tr:nth-child(even){background:rgba(127,127,127,.07)}
+.bd{padding:2px 9px;border-radius:3px;font-size:12px}.bd.r{background:#fbe3e1;color:#b3261e}.bd.g{background:#e1f2e2;color:#1e6b24}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--c);padding:13px;border:1px solid var(--bd);border-right:4px solid var(--p)}
+.card:nth-child(3n+2){border-right-color:#2e7d32}.card:nth-child(3n){border-right-color:var(--g)}
+.card small{color:var(--m)}.card b{display:block;font-size:19px;margin-top:5px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.pan{background:var(--c);padding:15px;border:1px solid var(--bd);border-radius:4px}
+.pan div{padding:3px 0}
+.chart{display:flex;gap:6px;align-items:flex-end;height:150px}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--m)}
+.col i{display:block;width:70%;background:var(--p);border-radius:3px 3px 0 0;min-height:2px}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:50}
+.box{background:var(--c);padding:18px;border-radius:6px;width:min(500px,94vw);max-height:92vh;overflow:auto}
+.ln{display:grid;grid-template-columns:1fr 62px 80px 34px;gap:4px}.ln>*{margin:0 0 6px}
+@media(max-width:800px){
+ body{display:block}
+ .top{display:flex;position:sticky;top:0;z-index:15;background:#14283f;color:#fff;padding:8px 12px;align-items:center;gap:10px}
+ .side{position:fixed;top:0;right:0;z-index:20;transform:translateX(105%);transition:.2s}
+ .side.open{transform:none;box-shadow:0 0 30px rgba(0,0,0,.5)}
+ .main{padding:12px}.btn{padding:8px 11px}
+}
+@media print{.side,.top,.noprint,.btn,#q{display:none!important}.main{padding:0}body{display:block}}
+</style>
+<style id="v2">
+.btn{border-radius:10px}input,select{border-radius:10px}
+body{display:block}
+.top{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:15;background:var(--c);color:var(--p);padding:10px 16px;border-bottom:1px solid var(--bd);font-size:16px}
+.top button{background:none;color:var(--p);box-shadow:none;border:1px solid var(--bd)}
+.main{max-width:980px;margin:0 auto;padding:16px 14px 110px}
+.bar{margin-bottom:12px}h1{font-size:20px}
+.side{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:auto;max-height:75vh;border-radius:18px 18px 0 0;transform:translateY(105%);transition:.25s;z-index:30;padding:14px 14px 90px}
+.side.open{transform:none;box-shadow:0 -10px 40px rgba(0,0,0,.4)}
+.side h2{display:none}
+.side #menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:560px;margin:0 auto}
+.side small{grid-column:1/-1;margin:8px 4px 0}
+.side a{flex-direction:column;text-align:center;font-size:12px;background:rgba(255,255,255,.08);padding:12px 4px;border-radius:12px}
+.side a .ic{width:22px;height:22px}
+#tabs{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;background:var(--c);border-top:1px solid var(--bd);z-index:35;padding:6px 0 max(6px,env(safe-area-inset-bottom))}
+#tabs a{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--m);padding:6px 0;cursor:pointer;border-top:3px solid transparent}
+#tabs a.on{color:var(--p);font-weight:700;border-top-color:var(--p)}
+#tabs .ic{width:22px;height:22px}
+#fab{position:fixed;bottom:84px;left:16px;width:56px;height:56px;border-radius:50%;background:var(--p);color:#fff;border:0;display:none;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:24}
+[data-t=d] #fab,[data-t=d] .hero{color:#10151c}
+#fab .ic{width:26px;height:26px}
+.lst .bar .btn.p{display:none}
+.tw{background:none;border:0;overflow:visible}
+.tw table,.tw tbody{display:block}.tw thead{display:none}
+.tw tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.tw tr{display:block;background:var(--c);border:1px solid var(--bd);border-radius:14px;padding:10px 14px}
+.tw tbody tr:nth-child(even){background:var(--c)}
+.tw td{display:flex;justify-content:space-between;gap:10px;border:0;padding:4px 0;white-space:normal}
+.tw td::before{content:attr(data-l);color:var(--m);font-size:12px;flex-shrink:0}
+.tw td:last-child{justify-content:flex-start;flex-wrap:wrap;border-top:1px dashed var(--bd);margin-top:6px;padding-top:8px}
+.tw td:last-child::before{display:none}.tw td[colspan]{display:block;text-align:center}
+#q{border-radius:20px;padding:11px 16px}
+.hero{background:var(--p);color:#fff;border-radius:18px;padding:20px;margin-bottom:12px;display:flex;flex-direction:column;gap:6px}
+.hero small{opacity:.8}.hero b{font-size:32px}.hero b i{font-size:15px;font-style:normal;opacity:.8}.hero span{font-size:13px;opacity:.9}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.qa button{background:var(--c);border:1px solid var(--bd);border-radius:14px;padding:12px 4px;color:var(--p);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+.qa .ic{width:24px;height:24px}
+.strip{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.strip .card{min-width:150px;border-radius:14px;border-right:1px solid var(--bd)}
+.pan{border-radius:14px;margin-bottom:12px}
+#modal{align-items:flex-end}
+.box{border-radius:20px 20px 0 0;width:min(560px,100%);max-height:88vh;padding-bottom:26px}
+@media print{#tabs,#fab{display:none!important}.tw tbody{display:block}}
+</style>
+<style id="v3">
+.side{display:none}
+.top{flex-wrap:wrap;padding-bottom:6px}
+#tabs{position:static;order:3;flex-basis:100%;width:100%;display:flex;justify-content:flex-start;gap:6px;overflow-x:auto;background:none;border:0;padding:8px 0 4px;z-index:auto}
+#tabs a{flex:0 0 auto;max-width:none;flex-direction:row;gap:6px;font-size:13px;padding:7px 13px;border:1px solid var(--bd);border-radius:20px;white-space:nowrap;border-top-width:1px;color:var(--t)}
+#tabs a.on{background:var(--p);color:#fff;border-color:var(--p)}
+[data-t=d] #tabs a.on{color:#10151c}
+#tabs .ic{width:16px;height:16px}
+#fab{bottom:20px}
+.main{padding-bottom:90px}
+</style>
+<style id="v4">
+body{display:flex}
+.top{display:none}#hb{display:none}#tabs{display:none!important}
+.side{display:block;position:sticky;top:0;left:auto;right:auto;bottom:auto;width:230px;height:100vh;max-height:none;border-radius:0;transform:none;box-shadow:none;padding:14px 10px;flex-shrink:0;overflow-y:auto;z-index:auto;transition:none}
+.side h2{display:block}
+.side #menu{display:block;max-width:none;margin:0}
+.side small{grid-column:auto;margin:14px 8px 4px}
+.side a{flex-direction:row;text-align:start;font-size:14px;background:none;padding:9px 10px;border-radius:6px}
+.side a:hover{background:#22405f}.side a.on{background:#f3efe4;color:#14283f}
+.side a .ic{width:1.15em;height:1.15em}
+.main{flex:1;min-width:0;max-width:1100px}
+#fab{bottom:20px}
+@media(max-width:800px){
+ body{display:block}
+ .top{display:flex;flex-wrap:nowrap;padding-bottom:10px}#hb{display:inline-flex}
+ .side{position:fixed;top:0;right:0;height:100%;transform:translateX(105%);transition:.2s;z-index:40}
+ .side.open{transform:none;box-shadow:0 0 30px rgba(0,0,0,.5)}
+ .main{max-width:none}
+}
+</style>
+<style id="v5">
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{border:1px solid var(--bd);background:var(--c);color:var(--t);border-radius:20px;padding:6px 14px;font:inherit;cursor:pointer}
+.chip.on{background:var(--p);color:#fff;border-color:var(--p)}[data-t=d] .chip.on{color:#10151c}
+.qb.st{background:none!important;color:inherit}.qb.st>div:first-child b{font-size:14px;color:inherit}.qb.st b{font-size:14px}
+.its{background:rgba(127,127,127,.08);border-radius:10px;padding:4px 10px}
+.ln2.hd{font-size:11px;color:var(--m);border-bottom:1px solid var(--bd)}
+.ln2 .q{background:var(--p);color:#fff;border-radius:8px;text-align:center;padding:1px 0}[data-t=d] .ln2 .q{color:#10151c}
+.qb{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}.qb>div{background:rgba(127,127,127,.08);border-radius:10px;padding:6px 2px}
+.qb small{display:block;font-size:11px;color:var(--m)}.qb b{font-size:15px}.qb>div:first-child b{font-size:21px;color:var(--p)}.qb .lo b{color:#b3261e!important}
+.ln2{display:grid;grid-template-columns:1fr 46px 62px 72px;gap:10px;font-size:13px;padding:6px 0;border-bottom:1px dotted var(--bd)}
+.ln2:last-child{border:0}.ln2 span:nth-child(2){color:var(--m)}
+.ln.sub{font-size:11px;color:var(--m)}
+.cl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.cd{background:var(--c);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.cd .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cd .sub{color:var(--m);font-size:12px;margin-top:2px}.cd .it{font-size:13px;opacity:.85}
+.cd .row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.cd .amt{font-size:19px;font-weight:700;color:var(--p)}
+.cd .ft{display:flex;flex-wrap:wrap;border-top:1px dashed var(--bd);padding-top:8px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+[data-t=d] .av{color:#10151c}.bd.y{background:#fdf0d5;color:#8a5a00}
+.po{display:none}@media print{.po{display:block}.cl{display:block}.cd{break-inside:avoid;margin-bottom:8px}}
+</style>
+<style id="v6">
+html.locked .side,html.locked .main,html.locked .top,html.locked #fab,html.locked #tabs,html.locked #modal{display:none!important}
+html.locked,html.locked body{overflow:hidden}
+#lock{display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;padding:16px;overflow:auto;background:linear-gradient(160deg,#10243a,#1f3a5f 60%,#2a4d7a)}
+.lk{background:var(--c);color:var(--t);width:min(400px,100%);border-radius:20px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.45);text-align:center;margin:auto}
+.lkl{height:96px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.lkl img{max-height:96px;max-width:220px;object-fit:contain}
+.lkl .ic{width:72px;height:72px;color:var(--p);background:rgba(127,127,127,.12);border-radius:20px;padding:14px;stroke-width:1.6}
+.lk h2{margin:6px 0 2px;color:var(--p);font-size:21px}
+.lk p{margin:0 0 16px;color:var(--m);font-size:13px;line-height:1.7}
+.lk form{text-align:start}.lk label{display:block;margin-bottom:4px}
+input[dir=ltr]{text-align:left}
+.pw{position:relative}.pw input{padding-right:42px}
+.eye{position:absolute;right:6px;top:4px;background:none;border:0;color:var(--m);cursor:pointer;padding:6px;line-height:0}
+.lkb{width:100%;justify-content:center;padding:12px;font-size:15px;margin:4px 0 0;border-radius:12px}
+.lerr{min-height:18px;color:#b3261e;font-size:13px;margin:-2px 0 8px}[data-t=d] .lerr{color:#ff8a80}
+.lkf{display:inline-block;margin-top:14px;color:var(--p);font-size:13px;cursor:pointer;text-decoration:underline}.lkf.dg{color:#b3261e}
+#dlg{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:16px}
+.dbx{background:var(--c);color:var(--t);border-radius:18px;padding:20px;width:min(440px,100%);max-height:92vh;overflow:auto;text-align:center}
+.dbx p{font-size:13px;line-height:1.8;color:var(--m)}
+.cod{font:700 21px/1.4 Consolas,monospace;letter-spacing:2px;direction:ltr;background:rgba(127,127,127,.12);border:2px dashed var(--g);border-radius:12px;padding:14px 6px;margin:12px 0;user-select:all}
+.wn{background:#fdf0d5;color:#8a5a00;border-radius:10px;padding:8px 10px;font-size:13px;margin:6px 0 10px}
+.lgp{display:flex;align-items:center;gap:10px;margin:6px 0 8px}.lgp .ic{width:56px;height:56px;color:var(--p)}
+.lgp img{max-height:56px;max-width:160px;object-fit:contain;border:1px solid var(--bd);border-radius:10px;padding:4px;background:#fff}
+.lg{width:auto;object-fit:contain;vertical-align:middle}
+.side h2{display:flex;align-items:center;gap:8px}.side h2 .lg{background:#fff;border-radius:6px;padding:2px;max-width:120px}
+.top b{display:flex;align-items:center;gap:8px}.top b .lg{background:#fff;border-radius:6px;padding:1px;max-width:90px}
+.side .lo{cursor:pointer}
+@media print{#lock,#dlg{display:none!important}}
+</style>
+</head>
+<body>
+<div class="top" id="top"><button class="btn p" onclick="tg()">☰</button><b id="co2"></b></div>
+<div class="side"><h2 id="co"></h2><div id="menu"></div></div>
+<div class="main" id="main"></div>
+<div id="lock"></div><div id="dlg"></div>
+<div id="modal"><div class="box"><h3 id="mt"></h3><div id="mf"></div>
+  <button class="btn s" onclick="save()">💾 حفظ</button>
+  <button class="btn n" onclick="closeM()">إلغاء</button></div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const I = p => `<svg class="ic" viewBox="0 0 24 24"><path d="${p}"/></svg>`;
+const P = {lock:'M5 11h14v10H5zM8 11V7a4 4 0 018 0v4', img:'M3 4h18v16H3zM3 16l5-5 4 4 3-3 6 6M9 9h.01', out:'M9 21H4V3h5M16 17l5-5-5-5M21 12H9', eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 100 6 3 3 0 000-6', key:'M15 7a4 4 0 11-3.9 4.9L3 20v-3h3v-3h3l2.1-2.1A4 4 0 0115 7M16 9h.01', shop:'M3 7h18v13H3zM8 7V4h8v3M3 13h18'};
+// ===== الصفحات وحقولها: [اسم الحقل, العنوان, النوع, اختياري] =====
+const dt = ['date','التاريخ','date'];
+const M = {
+  sales:    {t:'المبيعات',i:'🧾',f:[dt,['party','العميل','select:customers'],['product','المنتج','select:products'],['qty','الكمية','number'],['discount','الخصم','number','o'],['paid','المدفوع','number','o']]},
+  purchases:{t:'المشتريات',i:'🛍',f:[dt,['party','المورد','select:suppliers'],['product','المنتج','select:products'],['qty','الكمية','number'],['discount','الخصم','number','o'],['paid','المدفوع','number','o']]},
+  sret:     {t:'مرتجع البيع',i:'↩️',f:[dt,['party','العميل','select:customers'],['product','المنتج','select:products'],['qty','الكمية','number']]},
+  pret:     {t:'مرتجع الشراء',i:'↪️',f:[dt,['party','المورد','select:suppliers'],['product','المنتج','select:products'],['qty','الكمية','number']]},
+  products: {t:'المنتجات والمخزون',i:'📦',f:[['name','اسم المنتج'],['code','الكود','text','o'],['barcode','الباركود','text','o'],['cat','التصنيف','text','o'],['unit','الوحدة (قطعة، كيلو...)','text','o'],['price','سعر البيع','number'],['cost','سعر الشراء','number'],['stock','الكمية','number'],['min','حد التنبيه','number','o']]},
+  customers:{t:'العملاء',i:'👥',f:[['name','الاسم'],['phone','الهاتف','text','o'],['address','العنوان','text','o'],['open','رصيد افتتاحي','number','o']]},
+  suppliers:{t:'الموردون',i:'🏭',f:[['name','الاسم'],['phone','الهاتف','text','o'],['address','العنوان','text','o'],['open','رصيد افتتاحي','number','o']]},
+  cpay:     {t:'تحصيلات العملاء',i:'💰',f:[dt,['party','العميل','select:customers'],['amount','المبلغ','number'],['note','ملاحظة','text','o']]},
+  spay:     {t:'مدفوعات الموردين',i:'💸',f:[dt,['party','المورد','select:suppliers'],['amount','المبلغ','number'],['note','ملاحظة','text','o']]},
+  adj:      {t:'جرد المخزون',i:'📋',f:[dt,['product','المنتج','select:products'],['counted','الكمية الفعلية (اللي عدّيتها)','number'],['note','ملاحظة','text','o']]},
+  expenses: {t:'المصروفات',i:'🧮',f:[dt,['title','البيان'],['cat','النوع','list:إيجار|رواتب|كهرباء ومياه|نقل|تسويق|صيانة|مسحوبات شخصية|أخرى'],['amount','المبلغ','number'],['note','ملاحظات','text','o']]}
+};
+const MENU = [['dash','📊','الصفحة الرئيسية'],['#','الحركة التجارية'],'sales','purchases','sret','pret',['#','المخزون والأطراف'],'products','adj','customers','suppliers',['#','المالية'],'cpay','spay','expenses',['tre','🏦','الخزنة'],['#','التحليل'],['rep','📈','التقارير'],['set','⚙️','الإعدادات']];
+const ST = {sales:-1,purchases:1,sret:1,pret:-1};          // تأثير الفاتورة على المخزون
+const BM = {customers:['sales','sret','cpay'],suppliers:['purchases','pret','spay']};
+const MONEY = ['price','cost','paid','amount','discount'];
+
+// ===== البيانات =====
+let db = JSON.parse((window.api && window.api.load()) || localStorage.getItem('acc2') || 'null') || {};
+Object.keys(M).forEach(k => db[k] = db[k] || []);
+db.cfg = db.cfg || {name:'شركتي', dark:0};
+let cur = 'dash', mk = '', editId = null, sp = {}, rk = 'sales', rf = '', rt = '';
+const store = () => { try { track(); } catch (e) {} try { localStorage.setItem('acc2', JSON.stringify(db)); } catch (e) { alert('تعذر حفظ البيانات! المساحة ممتلئة أو التخزين غير متاح. خذ نسخة احتياطية الآن'); } if (window.api) { try { window.api.save(JSON.stringify(db)); } catch (e) {} } clearTimeout(ftm); ftm = setTimeout(() => fsWrite(), 600); try { syncSoon(); } catch (e) {} };
+let fh = null, fst = '', ftm = 0;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => (Number(n) || 0).toFixed(2);
+const r2 = n => Math.round((+n + Number.EPSILON) * 100) / 100;
+const S = (a, f) => a.reduce((s, x) => s + (+f(x) || 0), 0);
+const ld = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const today = () => ld(new Date());
+const nameOf = (c, id) => (db[c].find(x => x.id == id) || {}).name || '-';
+const bal = (k, id) => { const [a, b, c] = BM[k].map(n => db[n].filter(x => x.party == id)); return S(a, x => x.total - x.paid) - S(b, x => x.total - (x.paid || 0)) - S(c, x => x.amount) + (+(db[k].find(x => x.id == id) || {}).open || 0); };
+const cash = () => (+db.cfg.cash0 || 0) + S(db.sales, x => x.paid) + S(db.cpay, x => x.amount) - S(db.purchases, x => x.paid) - S(db.spay, x => x.amount) - S(db.expenses, x => x.amount) - S(db.sret, x => x.paid || 0) + S(db.pret, x => x.paid || 0);
+const profit = f => S(db.sales.filter(f), x => x.total - x.qty * x.cost) - S(db.sret.filter(f), x => x.total - x.qty * x.cost) - S(db.expenses.filter(x => f(x) && x.cat != 'مسحوبات شخصية'), x => x.amount);
+
+// ===== القائمة والتنقل =====
+function menu(){
+  $('co').textContent = '💼 ' + db.cfg.name;
+  document.documentElement.dataset.t = db.cfg.dark ? 'd' : '';
+  $('menu').innerHTML = MENU.map(m => {
+    if (m[0] == '#') return `<small>${m[1]}</small>`;
+    const [k, i, t] = typeof m == 'string' ? [m, M[m].i, M[m].t] : m;
+    return `<a class="${k == cur ? 'on' : ''}" onclick="go('${k}')">${i} ${t}</a>`;
+  }).join('');
+}
+function go(k){ cur = k; menu(); render(); scrollTo(0, 0); }
+function render(){
+  const f = {dash, tre, rep, set:setp, stmt:stmtp}[cur];
+  $('main').innerHTML = f ? f() : tbl(cur);
+}
+
+// ===== الصفحة الرئيسية =====
+function dash(){
+  const t = today(), pm = x => x.date.startsWith(t.slice(0, 7));
+  const net = f => S(db.sales.filter(f), x => x.total) - S(db.sret.filter(f), x => x.total);
+  const cards = [['مبيعات اليوم', net(x => x.date == t), '🛒'], ['مبيعات الشهر', net(pm), '📅'], ['أرباح الشهر', profit(pm), '💹'],
+    ['ديون العملاء', S(db.customers, c => bal('customers', c.id)), '👥'], ['مستحق للموردين', S(db.suppliers, c => bal('suppliers', c.id)), '🏭'],
+    ['رصيد الخزنة', cash(), '🏦'], ['مصروفات الشهر', S(db.expenses.filter(pm), x => x.amount), '💸'], ['قيمة المخزون', S(db.products, p => p.stock * p.cost), '📦']];
+  const days = [...Array(7)].map((_, i) => { const d = ld(new Date(Date.now() - (6 - i) * 864e5)); return [d, net(x => x.date == d)]; });
+  const mx = Math.max(...days.map(d => d[1]), 1);
+  const low = db.products.filter(p => p.stock <= (p.min || 0));
+  const top = db.products.map(p => [p.name, S(db.sales.filter(x => x.product == p.id), x => x.total)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const rec = invs('sales').slice(-5).reverse();
+  return `<div class="bar"><h1>📊 الصفحة الرئيسية</h1><span style="color:var(--m)">${t}</span></div>
+  <div class="cards">${cards.map(c => `<div class="card"><small>${c[2]} ${c[0]}</small><b>${money(c[1])} ج.م</b></div>`).join('')}</div>
+  <div class="two">
+   <div class="pan"><h3>📈 ملخص المبيعات (آخر 7 أيام)</h3><div class="chart">${days.map(d => `<div class="col" title="${money(d[1])}"><i style="height:${d[1] / mx * 85}%"></i>${d[0].slice(5)}</div>`).join('')}</div></div>
+   <div class="pan"><h3>⚠️ تنبيه نقص المخزون</h3>${low.length ? low.map(p => `<div>${esc(p.name)} <span class="bd r">المتبقي ${p.stock}</span></div>`).join('') : '<span class="bd g">المخزون كافي</span>'}</div>
+   <div class="pan"><h3>🏆 أكثر المنتجات مبيعًا</h3>${top.map(x => `<div>${esc(x[0])} — <b>${money(x[1])}</b></div>`).join('') || '<small>لا توجد مبيعات</small>'}</div>
+   <div class="pan"><h3>🧾 آخر الفواتير</h3>${rec.map(x => `<div>${x.date} — ${esc(nameOf('customers', x.party))} — <b>${money(x.total)}</b></div>`).join('') || '<small>لا توجد فواتير</small>'}</div>
+  </div>`;
+}
+
+// ===== جدول أي صفحة =====
+const EH = {sales:['الإجمالي', 'المتبقي'], purchases:['الإجمالي', 'المتبقي'], sret:['القيمة'], pret:['القيمة'], customers:['المتبقي'], suppliers:['المتبقي'], products:['الحالة']};
+function extra(k, r){
+  if (k == 'sales' || k == 'purchases') return [money(r.total), money(r.total - r.paid)];
+  if (k == 'sret' || k == 'pret') return [money(r.total)];
+  if (k == 'customers' || k == 'suppliers') return [money(bal(k, r.id))];
+  if (k == 'products') return [r.stock <= (r.min || 0) ? '<span class="bd r">منخفض</span>' : '<span class="bd g">متاح</span>'];
+  return [];
+}
+function act(k, r){
+  let h = '';
+  if (BM[k]) h += `<button class="btn sm s" onclick="openM('${k == 'customers' ? 'cpay' : 'spay'}',null,{party:'${r.id}'})">💰 دفعة</button><button class="btn sm i" onclick="stmt('${k}','${r.id}')">📄 كشف حساب</button>`;
+  if (k == 'sales' || k == 'purchases') h += `<button class="btn sm i" onclick="pinv('${k}','${r.id}')">🖨 فاتورة</button>`;
+  if (!ST[k]) h += `<button class="btn sm w" onclick="openM('${k}','${r.id}')">✏️ تعديل</button>`;
+  return h + `<button class="btn sm d" onclick="del('${k}','${r.id}')">🗑 حذف</button>`;
+}
+function pcards(k){
+  const m=M[k],L=k=='customers'?['عليه','له (مقدم)']:['مستحق له','عليه (مقدم)'],tot=S(db[k],c=>bal(k,c.id));
+  const cards=db[k].map(r=>{const b=bal(k,r.id),[ka,kb,kc]=BM[k],A=db[ka].filter(x=>x.party==r.id),B=db[kb].filter(x=>x.party==r.id),C=db[kc].filter(x=>x.party==r.id),nv=new Set(A.map(x=>x.inv||x.id)).size,pd=S(A,x=>x.paid)+S(C,x=>x.amount)-S(B,x=>x.paid||0),bb=b>.005?`<span class="bd r">${L[0]}</span>`:b<-.005?`<span class="bd y">${L[1]}</span>`:'<span class="bd g">مسدد</span>';
+    return `<div class="cd"><div class="h"><div style="display:flex;gap:10px;align-items:center"><div class="av">${esc((r.name||'?').trim().charAt(0))}</div><div><b>${esc(r.name)}</b><div class="sub">${r.phone?`<a href="tel:${esc(r.phone)}" style="color:inherit">📞 ${esc(r.phone)}</a>`:'—'}</div></div></div>${bb}</div>
+    ${r.address?`<div class="sub">📍 ${esc(r.address)}</div>`:''}
+    <div class="qb st"><div><small>عدد الفواتير</small><b>${nv}</b></div><div><small>${k=='customers'?'المبيعات':'المشتريات'}</small><b>${money(S(A,x=>x.total))}</b></div><div><small>المرتجعات</small><b>${money(S(B,x=>x.total))}</b></div><div><small>المدفوع</small><b>${money(pd)}</b></div></div>
+    ${r.open?`<div class="sub">رصيد افتتاحي: ${money(r.open)}</div>`:''}
+    <div class="row"><span>المتبقي</span><span class="amt">${money(Math.abs(b))} ج.م</span></div>
+    <div class="ft">${act(k,r)}</div></div>`}).join('');
+  return `<div class="bar"><h1>${m.i} ${m.t}</h1><div><button class="btn i" onclick="print()">🖨 طباعة</button><button class="btn p" onclick="openM('${k}')">➕ إضافة جديد</button></div></div>
+  <div class="cards"><div class="card"><small>العدد</small><b>${db[k].length}</b></div><div class="card"><small>إجمالي المتبقي</small><b>${money(tot)}</b></div></div>
+  <input id="q" placeholder="ابحث بالاسم أو الهاتف أو العنوان..." oninput="filt()"><div class="cl" id="tb">${cards||'<div class="cd">لا توجد بيانات</div>'}</div>`;
+}
+function prodCards(){
+  const m=M.products,tv=S(db.products,p=>p.stock*p.cost),lw=db.products.filter(p=>p.stock>0&&p.stock<=(p.min||0)).length,ou=db.products.filter(p=>p.stock<=0).length;
+  const cards=db.products.map(p=>{const sold=S(db.sales.filter(x=>x.product==p.id),x=>x.qty)-S(db.sret.filter(x=>x.product==p.id),x=>x.qty),bought=S(db.purchases.filter(x=>x.product==p.id),x=>x.qty)-S(db.pret.filter(x=>x.product==p.id),x=>x.qty),mg=p.price-p.cost,pc=p.price?Math.round(mg/p.price*100):0,b=p.stock<=0?'<span class="bd r">نفد</span>':p.stock<=(p.min||0)?'<span class="bd y">منخفض</span>':'<span class="bd g">متاح</span>';
+    return `<div class="cd"><div class="h"><div><b>${esc(p.name)}</b><div class="sub">${esc([p.code&&"كود: "+p.code,p.barcode&&"باركود: "+p.barcode,p.cat].filter(Boolean).join(" · "))}</div></div>${b}</div>
+    <div class="qb"><div class="${p.stock<=(p.min||0)?'lo':''}"><small>المتاح${p.unit?" ("+esc(p.unit)+")":""}</small><b>${p.stock}</b></div><div><small>حد التنبيه</small><b>${p.min||0}</b></div><div><small>مباع (صافي)</small><b>${sold}</b></div><div><small>مشترى (صافي)</small><b>${bought}</b></div></div>
+    <div class="row"><span>سعر البيع</span><b>${money(p.price)}</b></div>
+    <div class="row"><span>سعر الشراء (متوسط)</span><span>${money(p.cost)}</span></div>
+    <div class="row"><span>هامش الربح</span><span>${money(mg)} (${pc}%)</span></div>
+    <div class="row"><span>قيمة المخزون</span><span>${money(p.stock*p.cost)}</span></div>
+    <div class="ft">${act('products',p)}</div></div>`}).join('');
+  return `<div class="bar"><h1>${m.i} ${m.t}</h1><div><button class="btn i" onclick="print()">🖨 طباعة</button><button class="btn p" onclick="openM('products')">➕ إضافة جديد</button></div></div>
+  <div class="cards"><div class="card"><small>عدد الأصناف</small><b>${db.products.length}</b></div><div class="card"><small>قيمة المخزون بالتكلفة</small><b>${money(tv)}</b></div><div class="card"><small>أصناف منخفضة</small><b>${lw}</b></div><div class="card"><small>أصناف نفدت</small><b>${ou}</b></div></div>
+  <input id="q" placeholder="ابحث بالكود أو الباركود أو الاسم أو التصنيف..." oninput="filt()"><div class="cl" id="tb">${cards||'<div class="cd">لا توجد بيانات</div>'}</div>`;
+}
+function adjCards(){
+  const m = M.adj, cost = id => (db.products.find(x => x.id == id) || {}).cost || 0, tv = S(db.adj, r => r.diff * cost(r.product));
+  const cards = [...db.adj].reverse().map(r => { const b = r.diff > 0 ? `<span class="bd g">زيادة +${r.diff}</span>` : r.diff < 0 ? `<span class="bd r">عجز ${r.diff}</span>` : '<span class="bd g">مطابق</span>';
+    return `<div class="cd"><div class="h"><div><b>${esc(nameOf('products', r.product))}</b><div class="sub">📅 ${esc(r.date)}</div></div>${b}</div>
+    <div class="qb" style="grid-template-columns:repeat(3,1fr)"><div><small>قبل الجرد</small><b>${r.before}</b></div><div><small>بعد الجرد</small><b>${r.counted}</b></div><div><small>الفرق</small><b>${r.diff}</b></div></div>
+    <div class="row"><span>قيمة الفرق (بسعر الشراء)</span><b>${money(r.diff * cost(r.product))}</b></div>${r.note ? `<div class="sub">📝 ${esc(r.note)}</div>` : ''}
+    <div class="ft"><button class="btn sm d" onclick="del0('adj','${r.id}')">🗑 حذف</button></div></div>`; }).join('');
+  return `<div class="bar"><h1>${m.i} ${m.t}</h1><div><button class="btn p" onclick="openM('adj')">➕ جرد جديد</button></div></div>
+  <div class="cards"><div class="card"><small>عدد عمليات الجرد</small><b>${db.adj.length}</b></div><div class="card"><small>صافي قيمة الفروق</small><b>${money(tv)}</b></div></div>
+  <input id="q" placeholder="بحث..." oninput="filt()"><div class="cl" id="tb">${cards || '<div class="cd">لا توجد بيانات</div>'}</div>`;
+}
+function tbl0(k){ if (k == 'adj') return adjCards(); if (BM[k]) return pcards(k); if (k=='products') return prodCards();
+  const m = M[k], heads = [...m.f.map(f => f[1]), ...(EH[k] || []), 'إجراءات'];
+  const rows = [...db[k]].reverse().map(r => '<tr>' + [...m.f.map(([f,, t]) => t && t.startsWith('select') ? esc(nameOf(t.split(':')[1], r[f])) : MONEY.includes(f) ? money(r[f]) : esc(r[f])), ...extra(k, r), act(k, r)].map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
+  return `<div class="bar"><h1>${m.i} ${m.t}</h1><div><button class="btn i" onclick="print()">🖨 طباعة</button><button class="btn p" onclick="openM('${k}')">➕ إضافة جديد</button></div></div>
+  <input id="q" placeholder="بحث..." oninput="filt()"><div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody id="tb">${rows || `<tr><td colspan="${heads.length}">لا توجد بيانات</td></tr>`}</tbody></table></div>`;
+}
+function filt(){ const q = $('q').value.trim(); document.querySelectorAll('#tb>*').forEach(tr => tr.style.display = tr.textContent.includes(q) ? '' : 'none'); }
+
+// ===== نافذة الإضافة / التعديل =====
+function openM0(k, id, pre = {}){
+  mk = k; editId = id || null;
+  const r = id ? db[k].find(x => x.id == id) : pre;
+  $('mt').textContent = (id ? '✏️ تعديل: ' : '➕ إضافة: ') + M[k].t;
+  $('mf').innerHTML = M[k].f.map(([f, l, t = 'text']) => {
+    let v = r[f] ?? (t == 'date' ? today() : '');
+    if (t.startsWith('select') || t.startsWith('list')) {
+      const [kind, src] = t.split(':');
+      const opts = kind == 'select' ? db[src].map(o => [o.id, o.name]) : src.split('|').map(o => [o, o]);
+      return `<label>${l}</label><select id="f_${f}">${opts.map(([a, b]) => `<option value="${esc(a)}" ${a == v ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>`;
+    }
+    return `<label>${l}</label><input id="f_${f}" type="${t}" value="${esc(v)}">`;
+  }).join('');
+  $('modal').style.display = 'flex';
+}
+function closeM(){ editCtx = null; if (editSnap) { db = JSON.parse(editSnap); editSnap = null; store(); render(); } $('modal').style.display = 'none'; }
+
+// ===== الحفظ =====
+function save0(){
+  const rec = {};
+  for (const [f, l, t = 'text', o] of M[mk].f) {
+    let v = $('f_' + f).value.trim();
+    if (t == 'number') { v = parseFloat(v) || 0; if (v < 0) { alert('قيمة غير صحيحة: ' + l); return; } }
+    else if (!o && !v) { alert('أكمل: ' + l); return; }
+    if ((f == 'qty' || f == 'amount') && v <= 0) { alert('أدخل ' + l); return; }
+    rec[f] = v;
+  }
+  if (['products','customers','suppliers'].includes(mk) && db[mk].some(x => x.id != editId && String(x.name || '').trim() == rec.name)) { alert('الاسم موجود بالفعل'); return; }
+  if (mk == 'adj') { const pr = db.products.find(x => x.id == rec.product); if (!pr) { alert('أضف منتجًا أولًا'); return; } if (editId) { alert('لا يمكن تعديل الجرد، احذفه وسجّل جرد جديد'); return; } rec.before = pr.stock; rec.diff = r2(rec.counted - pr.stock); pr.stock = rec.counted; }
+  let p;
+  if (ST[mk]) {
+    p = db.products.find(x => x.id == rec.product);
+    if (!p) { alert('أضف منتجًا أولًا'); return; }
+    if (ST[mk] < 0 && rec.qty > p.stock) { alert('المخزون المتاح: ' + p.stock); return; }
+    rec.total = rec.qty * (mk == 'sales' || mk == 'sret' ? p.price : p.cost) - (rec.discount || 0);
+    rec.cost = p.cost; rec.paid = rec.paid || 0;
+    p.stock += ST[mk] * rec.qty;
+  }
+  if (editId) Object.assign(db[mk].find(x => x.id == editId), rec);
+  else { rec.id = Date.now() + Math.random().toString(36).slice(2, 5); db[mk].push(rec); }
+  store(); closeM(); render();
+}
+function del0(k, id){
+  if (!confirm('متأكد من الحذف؟')) return;
+  const r = db[k].find(x => x.id == id), p = ST[k] && db.products.find(x => x.id == r.product);
+  if (p) p.stock -= ST[k] * r.qty;
+  if (k == 'adj') { const pr = db.products.find(x => x.id == r.product); if (pr) { if (pr.stock - r.diff < 0) { alert('لا يمكن الحذف: سيجعل المخزون بالسالب'); return; } pr.stock = r2(pr.stock - r.diff); } }
+  db[k] = db[k].filter(x => x.id != id); store(); render();
+}
+
+// ===== كشف الحساب =====
+function stmt(k, id){ sp = {k, id}; cur = 'stmt'; menu(); render(); }
+function stmtp(){
+  const {k, id} = sp, c = db[k].find(x => x.id == id); if (!c) return '';
+  const [a, b, pp] = BM[k], cu = k == 'customers', e = [];
+  db[a].filter(x => x.party == id).forEach(x => { e.push([x.date, (cu ? 'فاتورة بيع' : 'فاتورة شراء') + ' — ' + nameOf('products', x.product) + ' × ' + x.qty, x.total]); if (x.paid > 0) e.push([x.date, 'مدفوع عند الفاتورة', -x.paid]); });
+  db[b].filter(x => x.party == id).forEach(x => { e.push([x.date, 'مرتجع — ' + nameOf('products', x.product) + ' × ' + x.qty, -x.total]); if (x.paid > 0) e.push([x.date, 'مبلغ مسترد', x.paid]); });
+  db[pp].filter(x => x.party == id).forEach(x => e.push([x.date, cu ? 'دفعة مستلمة' : 'دفعة مسددة', -x.amount]));
+  e.sort((x, y) => x[0].localeCompare(y[0]));
+  let r = +c.open || 0;
+  const rows = (r ? `<tr><td></td><td>رصيد افتتاحي</td><td>${r > 0 ? money(r) : ''}</td><td>${r < 0 ? money(-r) : ''}</td><td>${money(r)}</td></tr>` : '') + e.map(([d, t, v]) => { r += v; return `<tr><td>${d}</td><td>${esc(t)}</td><td>${v > 0 ? money(v) : ''}</td><td>${v < 0 ? money(-v) : ''}</td><td>${money(r)}</td></tr>`; }).join('');
+  return `<h2 class="po">${lgc(48)}${esc(db.cfg.name)}</h2><div class="bar"><h1>📄 كشف حساب: ${esc(c.name)}</h1><div><button class="btn i" onclick="print()">🖨 طباعة</button><button class="btn n" onclick="go('${k}')">رجوع</button></div></div>
+  <div class="cards"><div class="card"><small>الرصيد المتبقي</small><b>${money(r)} ج.م</b></div></div>
+  <div class="tw"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>مستحق (+)</th><th>مسدد (−)</th><th>الرصيد</th></tr></thead><tbody>${rows || '<tr><td colspan="5">لا توجد حركات</td></tr>'}</tbody></table></div>`;
+}
+
+// ===== الخزنة =====
+function tre(){
+  const mv = [];
+  db.sales.forEach(x => x.paid > 0 && mv.push([x.date, 'مبيعات — ' + nameOf('customers', x.party), x.paid]));
+  db.cpay.forEach(x => mv.push([x.date, 'تحصيل — ' + nameOf('customers', x.party), x.amount]));
+  db.purchases.forEach(x => x.paid > 0 && mv.push([x.date, 'مشتريات — ' + nameOf('suppliers', x.party), -x.paid]));
+  db.spay.forEach(x => mv.push([x.date, 'دفع لمورد — ' + nameOf('suppliers', x.party), -x.amount]));
+  db.expenses.forEach(x => mv.push([x.date, 'مصروف — ' + x.title, -x.amount]));
+  db.sret.forEach(x => x.paid > 0 && mv.push([x.date, 'مرتجع بيع — ' + nameOf('customers', x.party), -x.paid]));
+  db.pret.forEach(x => x.paid > 0 && mv.push([x.date, 'مرتجع شراء — ' + nameOf('suppliers', x.party), x.paid]));
+  if (+db.cfg.cash0) mv.push(['', 'رصيد افتتاحي', +db.cfg.cash0]); mv.sort((a, b) => b[0].localeCompare(a[0]));
+  const inn = S(mv.filter(x => x[2] > 0), x => x[2]), out = -S(mv.filter(x => x[2] < 0), x => x[2]);
+  return `<div class="bar"><h1>🏦 الخزنة</h1><button class="btn i" onclick="print()">🖨 طباعة</button></div>
+  <div class="cards"><div class="card"><small>إجمالي الوارد</small><b>${money(inn)}</b></div><div class="card"><small>إجمالي المنصرف</small><b>${money(out)}</b></div><div class="card"><small>الرصيد الحالي</small><b>${money(inn - out)}</b></div></div>
+  <div class="tw"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>وارد</th><th>منصرف</th></tr></thead><tbody>${mv.map(x => `<tr><td>${x[0]}</td><td>${esc(x[1])}</td><td>${x[2] > 0 ? money(x[2]) : ''}</td><td>${x[2] < 0 ? money(-x[2]) : ''}</td></tr>`).join('') || '<tr><td colspan="4">لا توجد حركات</td></tr>'}</tbody></table></div>`;
+}
+
+// ===== التقارير =====
+const inR = x => (!rf || x.date >= rf) && (!rt || x.date <= rt);
+const REP = {
+  sales: ['ملخص المبيعات اليومي', () => {
+    const m = {}, g = d => m[d] = m[d] || [0, 0, 0];
+    const seen = new Set(); db.sales.filter(inR).forEach(x => { const o = g(x.date), i = x.inv || x.id; if (!seen.has(i)) { seen.add(i); o[0]++; } o[1] += x.total; });
+    db.sret.filter(inR).forEach(x => g(x.date)[2] += x.total);
+    const ks = Object.keys(m).sort(), r = ks.map(d => [d, m[d][0], money(m[d][1]), money(m[d][2]), money(m[d][1] - m[d][2])]);
+    r.push(['الإجمالي', S(ks, d => m[d][0]), money(S(ks, d => m[d][1])), money(S(ks, d => m[d][2])), money(S(ks, d => m[d][1] - m[d][2]))]);
+    return [['التاريخ', 'عدد الفواتير', 'المبيعات', 'المرتجعات', 'الصافي'], r];
+  }],
+  prod: ['مبيعات وأرباح حسب المنتج (صافي بعد المرتجع)', () => [['المنتج', 'صافي الكمية', 'صافي المبيعات', 'الربح'],
+    db.products.map(p => { const a = db.sales.filter(x => x.product == p.id && inR(x)), b = db.sret.filter(x => x.product == p.id && inR(x)); return [p.name, S(a, x => x.qty) - S(b, x => x.qty), money(S(a, x => x.total) - S(b, x => x.total)), money(S(a, x => x.total - x.qty * x.cost) - S(b, x => x.total - x.qty * x.cost))]; }).filter(x => +x[1] || +x[2])]],
+  profit: ['الأرباح والخسائر', () => {
+    const s = S(db.sales.filter(inR), x => x.total), rr = S(db.sret.filter(inR), x => x.total);
+    const cg = S(db.sales.filter(inR), x => x.qty * x.cost) - S(db.sret.filter(inR), x => x.qty * x.cost), ex = S(db.expenses.filter(x => inR(x) && x.cat != 'مسحوبات شخصية'), x => x.amount);
+    return [['البند', 'المبلغ'], [['إجمالي المبيعات', money(s)], ['المرتجعات', money(-rr)], ['تكلفة البضاعة المباعة', money(-cg)], ['المصروفات', money(-ex)], ['صافي الربح', money(s - rr - cg - ex)]]];
+  }],
+  cust: ['أرصدة العملاء', () => [['العميل', 'الهاتف', 'المتبقي'], db.customers.map(c => [c.name, c.phone, money(bal('customers', c.id))])]],
+  supp: ['أرصدة الموردين', () => [['المورد', 'الهاتف', 'المستحق'], db.suppliers.map(c => [c.name, c.phone, money(bal('suppliers', c.id))])]],
+  topc: ['أفضل العملاء', () => [['العميل', 'إجمالي المشتريات'], db.customers.map(c => [c.name, S(db.sales.filter(x => x.party == c.id && inR(x)), x => x.total)]).sort((a, b) => b[1] - a[1]).map(x => [x[0], money(x[1])])]],
+  stock: ['جرد المخزون', () => {
+    const r = db.products.map(p => [p.name, p.stock, money(p.cost), money(p.stock * p.cost), money(p.stock * p.price)]);
+    r.push(['الإجمالي', '', '', money(S(db.products, p => p.stock * p.cost)), money(S(db.products, p => p.stock * p.price))]);
+    return [['المنتج', 'الكمية', 'سعر الشراء', 'قيمة بالتكلفة', 'قيمة بالبيع'], r];
+  }],
+  exp: ['المصروفات حسب النوع', () => {
+    const m = {}; db.expenses.filter(inR).forEach(x => m[x.cat] = (m[x.cat] || 0) + x.amount);
+    return [['النوع', 'المبلغ'], Object.keys(m).map(c => [c, money(m[c])])];
+  }]
+};
+function rep(){
+  const [h, r] = REP[rk][1]();
+  return `<div class="bar"><h1>📈 التقارير</h1><div><button class="btn s" onclick="csv()">⬇ تصدير Excel</button><button class="btn i" onclick="print()">🖨 طباعة</button></div></div>
+  <div class="pan noprint" style="margin-bottom:12px"><label>نوع التقرير</label><select onchange="rk=this.value;render()">${Object.keys(REP).map(k => `<option value="${k}" ${k == rk ? 'selected' : ''}>${REP[k][0]}</option>`).join('')}</select>
+  <div class="two"><div><label>من تاريخ</label><input type="date" value="${rf}" onchange="rf=this.value;render()"></div><div><label>إلى تاريخ</label><input type="date" value="${rt}" onchange="rt=this.value;render()"></div></div></div>
+  <h3>${REP[rk][0]} ${rf || rt ? `(${rf || '...'} → ${rt || '...'})` : ''}</h3>
+  <div class="tw"><table><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${r.map(a => `<tr>${a.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${h.length}">لا توجد بيانات</td></tr>`}</tbody></table></div>`;
+}
+function csv(){
+  const [h, r] = REP[rk][1](), t = [h, ...r].map(a => a.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + t], {type:'text/csv'})); a.download = 'تقرير.csv'; a.click();
+}
+
+// ===== طباعة فاتورة =====
+// ===== الإعدادات =====
+function setp(){
+  return `<div class="bar"><h1>⚙️ الإعدادات</h1></div><div class="pan" style="max-width:480px">
+  <label>اسم الشركة (يظهر في القائمة والفواتير)</label><input id="cn" value="${esc(db.cfg.name)}">
+  <button class="btn p" onclick="db.cfg.name=$('cn').value||'شركتي';store();menu();render()">💾 حفظ الاسم</button>
+  <button class="btn n" onclick="db.cfg.dark=db.cfg.dark?0:1;store();menu();render()">🌓 الوضع الليلي</button><hr>
+  <label>رصيد الخزنة الافتتاحي</label><input id="c0" type="number" value="${+db.cfg.cash0 || 0}"><button class="btn p" onclick="db.cfg.cash0=+$('c0').value||0;store();render()">💾 حفظ الرصيد</button><hr>
+  ${logoSec()}${authSec()}${syncSec()}
+  <h3>النسخ الاحتياطي</h3>
+  <button class="btn p" onclick="shareBackup()">📤 مشاركة نسخة (درايف / واتساب)</button><button class="btn s" onclick="exportData()">⬇ تنزيل نسخة</button><button class="btn w" onclick="importData()">⬆ استرجاع</button><hr>
+  ${FS ? `<h3>الحفظ التلقائي في ملف</h3><small id="fst" style="color:var(--m)">${esc(fst || 'غير مربوط')}</small><br>
+  <button class="btn p" onclick="fsLink(0)">📄 ربط بملف جديد</button><button class="btn i" onclick="fsLink(1)">📂 فتح ملف موجود</button>${fh ? '<button class="btn s" onclick="fsPerm()">إعادة تفعيل</button><button class="btn n" onclick="fsUnlink()">فصل</button>' : ''}<hr>` : (window.api ? '<h3>مكان البيانات</h3><small style="color:var(--m)">البيانات بتتحفظ تلقائيًا في ملف على الجهاز، ومعاها نسخة يومية تلقائية</small><br><button class="btn i" onclick="api.open()">📂 فتح مجلد البيانات</button><hr>' : '<small style="color:var(--m)">الحفظ التلقائي في ملف متاح على كمبيوتر Chrome أو Edge فقط. على الموبايل استخدم زر المشاركة.</small><hr>')}
+  <button class="btn d" onclick="resetAll()">⚠️ مسح كل البيانات</button></div>`;
+}
+const FS = 'showSaveFilePicker' in window && !window.api;
+const FT = [{description:'JSON', accept:{'application/json':['.json']}}];
+const idb = (m, v) => new Promise((ok, no) => { const q = indexedDB.open('accfs', 1); q.onupgradeneeded = () => q.result.createObjectStore('h'); q.onerror = () => no(q.error); q.onsuccess = () => { const o = q.result.transaction('h', m == 'get' ? 'readonly' : 'readwrite').objectStore('h'), r = m == 'get' ? o.get('f') : m == 'del' ? o.delete('f') : o.put(v, 'f'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }; });
+async function fsWrite(){
+  if (!fh) return;
+  try { if ((await fh.queryPermission({mode:'readwrite'})) != 'granted') fst = 'محتاج إعادة تفعيل'; else { const w = await fh.createWritable(); await w.write(JSON.stringify(db)); await w.close(); fst = 'آخر حفظ في الملف: ' + new Date().toLocaleTimeString('ar-EG'); } } catch (e) { fst = 'تعذر الحفظ في الملف'; }
+  const el = $('fst'); if (el) el.textContent = fst;
+}
+async function fsInit(){ if (!FS) return; try { const h = await idb('get'); if (h) { fh = h; fst = (await h.queryPermission({mode:'readwrite'})) == 'granted' ? 'مربوط بالملف: ' + h.name : 'مربوط بـ ' + h.name + ' — اضغط إعادة تفعيل'; const el = $('fst'); if (el) el.textContent = fst; } } catch (e) {} }
+async function fsLink(open){
+  try {
+    let h;
+    if (open) { [h] = await showOpenFilePicker({types:FT}); const n = JSON.parse(await (await h.getFile()).text()); if (!n || typeof n != 'object' || Array.isArray(n)) throw 0; if (!confirm('سيتم استبدال البيانات الحالية ببيانات الملف. متأكد؟')) return; db = adopt(n); }
+    else h = await showSaveFilePicker({suggestedName:'accounts-data.json', types:FT});
+    if ((await h.requestPermission({mode:'readwrite'})) != 'granted') return;
+    fh = h; await idb('put', h); store(); await fsWrite(); menu(); render();
+  } catch (e) { if (!e || e.name != 'AbortError') alert('تعذر الربط بالملف'); }
+}
+async function fsPerm(){ if (fh && (await fh.requestPermission({mode:'readwrite'})) == 'granted') { await fsWrite(); render(); } }
+async function fsUnlink(){ fh = null; fst = ''; try { await idb('del'); } catch (e) {} render(); }
+async function shareBackup(){
+  const f = new File([bk()], 'backup-' + today() + '.json', {type:'application/json'});
+  try { if (navigator.canShare && navigator.canShare({files:[f]})) { db.cfg.bk = Date.now(); store(); await navigator.share({files:[f], title:'نسخة احتياطية - ' + db.cfg.name}); return; } } catch (e) { if (e && e.name == 'AbortError') return; }
+  exportData();
+}
+function exportData(){ db.cfg.bk = Date.now(); store(); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bk()], {type:'application/json'})); a.download = 'backup-' + today() + '.json'; a.click(); }
+function importData(){
+  const i = document.createElement('input'); i.type = 'file'; i.accept = '.json';
+  i.onchange = () => { const fr = new FileReader(); fr.onload = () => { try { const n = JSON.parse(fr.result); if (!n || typeof n != 'object' || Array.isArray(n)) throw 0; if (!confirm('سيتم استبدال كل البيانات الحالية بالنسخة المختارة. متأكد؟')) return; try { localStorage.setItem('acc2_pre_restore', JSON.stringify(db)); } catch (e) {} db = adopt(n); store(); menu(); render(); alert('تم الاسترجاع'); } catch (e) { alert('ملف غير صالح'); } }; fr.readAsText(i.files[0]); };
+  i.click();
+}
+function resetAll(){ if (confirm('هتتمسح كل البيانات! (بيانات الدخول والشعار هتفضل زي ما هي) متأكد؟') && confirm('تأكيد أخير؟')) wipe({cfg:{name:'شركتي', dark:db.cfg.dark ? 1 : 0, auth:db.cfg.auth, logo:db.cfg.logo}}); }
+
+// ===== تحديثات: أيقونات + فواتير متعددة الأصناف + إصلاحات =====
+const ICO={'1f4ca':'M4 20V10M10 20V4M16 20v-8M22 20H2','1f4bc':'M3 7h18v13H3zM8 7V4h8v3M3 13h18','1f9fe':'M6 2h12v20l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6','1f6cd':'M5 8h14l-1 13H6zM9 8a3 3 0 016 0','21a9':'M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3','21aa':'M15 14l5-5-5-5M20 9H10a6 6 0 000 12h3','1f4e6':'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10','1f465':'M16 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9.5 11a4 4 0 100-8 4 4 0 000 8M21 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8','1f3ed':'M2 21V9l6 4V9l6 4V5h4v16zM2 21h20','1f4b0':'M12 3a9 9 0 100 18 9 9 0 000-18M12 7v10M14.5 9.5a2.5 2 0 00-2.5-1.5 2.5 2 0 000 4 2.5 2 0 010 4 2.5 2 0 01-2.5-1.5','1f4b8':'M7 17L17 7M8 7h9v9','1f9ee':'M4 3h16v18H4zM8 7h8M8 12h2M14 12h2M8 16h2M14 16h2','1f3e6':'M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18','1f4c8':'M3 17l6-6 4 4 8-8M15 7h6v6','1f4b9':'M3 17l6-6 4 4 8-8M3 21h18','2699':'M12 9a3 3 0 100 6 3 3 0 000-6M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2','1f4be':'M5 3h12l4 4v14H5zM8 3v5h8V3M8 21v-7h8v7','2795':'M12 5v14M5 12h14','270f':'M4 20l1-4L16 5l3 3L8 19zM14 7l3 3','1f5d1':'M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14','1f5a8':'M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z','2b07':'M12 4v12M7 11l5 5 5-5M5 20h14','2b06':'M12 20V8M7 13l5-5 5 5M5 4h14','1f50d':'M11 4a7 7 0 100 14 7 7 0 000-14M21 21l-5-5','1f4c4':'M6 2h9l5 5v15H6zM14 2v6h6M9 13h7M9 17h7','1f6d2':'M3 4h3l2 12h10l2-9H7M10 21h.01M17 21h.01','1f4c5':'M4 5h16v16H4zM4 10h16M8 3v4M16 3v4','26a0':'M12 3l10 18H2zM12 10v5M12 18h.01','1f3c6':'M7 4h10v5a5 5 0 01-10 0zM7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3M12 14v4M8 21h8','1f313':'M20 14A8 8 0 0110 4a8 8 0 1010 10z','2630':'M4 6h16M4 12h16M4 18h16'};
+const ic=h=>h.replace(/[\u2190-\u2bff\u{1F300}-\u{1FAFF}]\uFE0F?/gu,e=>{const p=ICO[e.codePointAt(0).toString(16)];return p?`<svg class="ic" viewBox="0 0 24 24"><path d="${p}"/></svg>`:e});
+const swap=e=>e.innerHTML=ic(e.innerHTML);
+const m0=menu,r0=render,g0=go;
+menu=()=>{ if(!db.customers.some(c=>c.id=='cash'))db.customers.unshift({id:'cash',name:'عميل نقدي'}); m0(); swap($('menu')); $('co').innerHTML=lg(26)+' '+esc(db.cfg.name); $('co2').innerHTML=lg(22)+' '+esc(db.cfg.name); };
+render=()=>{ r0(); swap($('main')); };
+go=k=>{ document.querySelector('.side').classList.remove('open'); g0(k); };
+function tg(){ document.querySelector('.side').classList.toggle('open'); }
+swap($('modal')); document.querySelector('.top button').innerHTML=ic('☰');
+
+function invs(k){const m=new Map();db[k].forEach(r=>{const i=r.inv||r.id;if(!m.has(i))m.set(i,{inv:i,date:r.date,party:r.party,rows:[],total:0,paid:0});const g=m.get(i);g.rows.push(r);g.total+=r.total;g.paid+=r.paid||0});return [...m.values()]}
+const KT={sales:['العميل','customers',1],purchases:['المورد','suppliers',1],sret:['العميل','customers',0],pret:['المورد','suppliers',0]};
+const pr=(k,p)=>k=='sales'||k=='sret'?p.price:p.cost;
+const opts=(src)=>db[src].map(o=>`<option value="${esc(o.id)}">${esc(o.name)}</option>`).join('');
+function line(k){const po=db.products;return `<div class="ln"><select onchange="lp(this)">${po.map(p=>`<option value="${esc(p.id)}" data-p="${pr(k,p)}">${esc(p.name)} — المتاح ${p.stock}</option>`).join('')}</select><input type="number" min="0" step="any" value="1" oninput="tot()"><input type="number" min="0" step="any" value="${po[0]?pr(k,po[0]):0}" oninput="tot()"><button class="btn sm d" onclick="this.parentNode.remove();tot()">×</button></div>`}
+function lp(s){s.parentNode.children[2].value=s.selectedOptions[0].dataset.p;tot()}
+function tot(){let s=0;document.querySelectorAll('#ls .ln').forEach(l=>s+=l.children[1].value*l.children[2].value);const d=+($('f_discount')||{}).value||0,p=$('f_paid');if(KT[mk][2]&&!p.dataset.m)p.value=Math.max(s-d,0);$('tt').textContent=money(s-d)}
+function openM(k,id,pre={}){
+  if(!ST[k]){openM0(k,id,pre);$('mt').innerHTML=ic($('mt').textContent);return}
+  if(!db.products.length){alert('أضف منتجًا أولًا');return}
+  mk=k;editId=null;const [l,src,f]=KT[k];
+  $('mt').innerHTML=ic('➕ ')+M[k].t;
+  $('mf').innerHTML=`<label>التاريخ</label><input id="f_date" type="date" value="${today()}"><label>${l}</label><select id="f_party">${opts(src)}</select><label>الأصناف</label><div class="ln sub"><span>المنتج (المتاح)</span><span>الكمية</span><span>السعر</span><span></span></div><div id="ls">${line(k)}</div><button class="btn sm i" onclick="$('ls').insertAdjacentHTML('beforeend',line(mk));tot()">+ سطر</button>${f?'<br><label>الخصم</label><input id="f_discount" type="number" min="0" value="0" oninput="tot()">':''}<label>${f?'المدفوع':'المسترد نقدًا'}</label><input id="f_paid" type="number" min="0" value="0" oninput="this.dataset.m=1"><h3>الإجمالي: <span id="tt">0</span> ج.م</h3>`;
+  if(pre.edit){const g=pre.edit;$('f_date').value=g[0].date;$('f_party').value=g[0].party;$('ls').innerHTML=g.map(()=>line(k)).join('');
+    [...document.querySelectorAll('#ls .ln')].forEach((l,i)=>{l.children[0].value=g[i].product;l.children[1].value=g[i].qty;l.children[2].value=g[i].price??(g[i].total+(g[i].discount||0))/g[i].qty});
+    if($('f_discount'))$('f_discount').value=S(g,r=>r.discount);$('f_paid').value=g[0].paid;$('f_paid').dataset.m=1;$('mt').innerHTML=ic('✏️ تعديل ')+M[k].t}
+  tot();$('modal').style.display='flex';
+}
+function save(){ ST[mk]?saveInv():save0(); }
+function saveInv(){
+  const k=mk,rows=[],st={},party=$('f_party').value,date=$('f_date').value,d=+($('f_discount')||{}).value||0,paid=+$('f_paid').value||0;
+  if(!party||!date){alert('أكمل البيانات');return}
+  const inv=editCtx&&editCtx.k==k?editCtx.inv:Date.now()+Math.random().toString(36).slice(2,5);
+  for(const l of document.querySelectorAll('#ls .ln')){
+    const p=db.products.find(x=>x.id==l.children[0].value),q=+l.children[1].value,pc=+l.children[2].value;
+    if(!p||!(q>0)||!(pc>=0)){alert('راجع الأصناف والكميات والأسعار');return}
+    st[p.id]=(st[p.id]??p.stock)+ST[k]*q;
+    if(st[p.id]<0){alert('المخزون غير كافٍ: '+p.name);return}
+    rows.push({id:inv+rows.length,inv,date,party,product:p.id,qty:q,price:pc,cost:k=='purchases'?pc:p.cost,discount:0,paid:0,total:r2(q*pc)});
+  }
+  if(k=='sret'||k=='pret'){const base=k=='sret'?'sales':'purchases',tq={};rows.forEach(r=>tq[r.product]=(tq[r.product]||0)+r.qty);
+    for(const pid in tq){const av=S(db[base].filter(x=>x.party==party&&x.product==pid),x=>x.qty)-S(db[k].filter(x=>x.party==party&&x.product==pid),x=>x.qty);if(tq[pid]>av){alert('الكمية المرتجعة أكبر من المتاح للإرجاع ('+av+') — '+nameOf('products',pid));return}}}
+  const sub=S(rows,r=>r.total);
+  if(!rows.length){alert('أضف صنفًا واحدًا على الأقل');return}if(d<0||d>sub){alert('الخصم غير صحيح');return}
+  if(paid<0||paid>sub-d){alert('المبلغ المدفوع/المسترد غير صحيح');return}
+  if(party=='cash'&&k=='sales'&&paid<sub-d-.005){alert('العميل النقدي يجب أن يدفع كامل المبلغ');return}
+  let left=d;rows.forEach((r,i)=>{const x=i==rows.length-1?left:(sub?r2(d*r.total/sub):0);r.discount=x;r.total=r2(r.total-x);left=r2(left-x)});rows[0].paid=paid;
+  rows.forEach(r=>{const p=db.products.find(x=>x.id==r.product);if(k=='purchases')p.cost=(p.stock*p.cost+r.qty*r.price)/(p.stock+r.qty);p.stock+=ST[k]*r.qty});
+  if(editCtx&&editCtx.k==k)db[k].splice(Math.min(editCtx.idx,db[k].length),0,...rows);else db[k].push(...rows);editSnap=null;editCtx=null;store();closeM();render();
+}
+let editSnap=null,editCtx=null;
+function revertInv(k,id){
+  const rs=db[k].filter(x=>(x.inv||x.id)==id),sq={};rs.forEach(r=>sq[r.product]=(sq[r.product]||0)+ST[k]*r.qty);
+  for(const pid in sq){const p=db.products.find(x=>x.id==pid);if(p&&p.stock-sq[pid]<0){alert('لا يمكن التعديل: سيجعل مخزون "'+p.name+'" بالسالب');return false}}
+  rs.forEach(r=>{const p=db.products.find(x=>x.id==r.product);if(!p)return;if(k=='purchases'&&p.stock-r.qty>0)p.cost=Math.round((p.stock*p.cost-r.qty*(r.price??r.cost))/(p.stock-r.qty)*1e4)/1e4;p.stock-=ST[k]*r.qty});
+  db[k]=db[k].filter(x=>(x.inv||x.id)!=id);return true;
+}
+function editInv(k,id){
+  const rs=db[k].filter(x=>(x.inv||x.id)==id);if(!rs.length)return;
+  const snap=JSON.stringify(db),ix=db[k].findIndex(x=>(x.inv||x.id)==id);if(!revertInv(k,id))return;
+  editSnap=snap;editCtx={k,inv:id,idx:ix};openM(k,null,{edit:rs});
+}
+const own={products:'product',customers:'party',suppliers:'party'};
+function del(k,id){
+  if(own[k]){const ks=k=='products'?[...Object.keys(ST),'adj']:BM[k];if(id=='cash'||ks.some(n=>db[n].some(x=>x[own[k]]==id))){alert('لا يمكن الحذف: عليه حركات');return}return del0(k,id)}
+  if(!ST[k])return del0(k,id);
+  if(!confirm('متأكد من حذف الفاتورة؟'))return;
+  const rs=db[k].filter(x=>(x.inv||x.id)==id),sq={};rs.forEach(r=>sq[r.product]=(sq[r.product]||0)+ST[k]*r.qty);
+  for(const pid in sq){const p=db.products.find(x=>x.id==pid);if(p&&p.stock-sq[pid]<0){alert('لا يمكن الحذف: سيجعل مخزون "'+p.name+'" بالسالب');return}}
+  rs.forEach(r=>{const p=db.products.find(x=>x.id==r.product);if(!p)return;if(k=='purchases'&&p.stock-r.qty>0)p.cost=Math.round((p.stock*p.cost-r.qty*(r.price??r.cost))/(p.stock-r.qty)*1e4)/1e4;p.stock-=ST[k]*r.qty});
+  db[k]=db[k].filter(x=>(x.inv||x.id)!=id);store();render();
+}
+const IF={};
+function perBar(k){
+  const o=IF[k]||(IF[k]={p:'all',s:''}),P=[['day','اليوم'],['week','الأسبوع'],['month','الشهر'],['all','الكل'],['rng','فترة']],Sx=KT[k][2]?[['','الكل'],['paid','مدفوع'],['part','جزئي'],['due','آجل']]:[];
+  return `<div class="chips">${P.map(([v,l])=>`<button class="chip${o.p==v?' on':''}" onclick="IF['${k}'].p='${v}';render()">${l}</button>`).join('')}</div>${o.p=='rng'?`<div class="chips"><input type="date" value="${o.from||''}" onchange="IF['${k}'].from=this.value;render()"><input type="date" value="${o.to||''}" onchange="IF['${k}'].to=this.value;render()"></div>`:''}${Sx.length?`<div class="chips">${Sx.map(([v,l])=>`<button class="chip${o.s==v?' on':''}" onclick="IF['${k}'].s='${v}';render()">${l}</button>`).join('')}</div>`:''}`;
+}
+function invOK(k){
+  const o=IF[k]||(IF[k]={p:'all',s:''}),t=today(),L=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  let a='',b='9999-12-31';
+  if(o.p=='day')a=b=t;else if(o.p=='week')a=L(new Date(Date.now()-6*864e5));else if(o.p=='month'){a=t.slice(0,7)+'-01';b=t.slice(0,7)+'-31'}else if(o.p=='rng'){a=o.from||'';b=o.to||b}
+  return x=>x.date>=a&&x.date<=b&&(!o.s||(o.s=='paid'?x.total-x.paid<=.005:o.s=='part'?x.paid>0&&x.total-x.paid>.005:x.paid<=0&&x.total>.005));
+}
+function tbl(k){
+  if(!ST[k])return tbl0(k);
+  const m=M[k],f=KT[k][2],g=invs(k).map((x,i)=>(x.n=i+1,x)).reverse().filter(invOK(k)),T=S(g,x=>x.total),R=S(g,x=>x.total-x.paid);
+  const cards=g.map(x=>{const rem=x.total-x.paid,b=!f?'<span class="bd g">مرتجع</span>':rem<=.005?'<span class="bd g">مدفوع</span>':x.paid>0?'<span class="bd y">جزئي</span>':'<span class="bd r">آجل</span>';
+    return `<div class="cd"><div class="h"><div><b>#${x.n} · ${esc(nameOf(KT[k][1],x.party))}</b><div class="sub">📅 ${esc(x.date)} · ${x.rows.length} صنف</div></div>${b}</div>
+    <div class="its"><div class="ln2 hd"><span>المنتج</span><span>الكمية</span><span>السعر</span><span>الإجمالي</span></div>${x.rows.map(r=>{const pr=r.price??(r.total+(r.discount||0))/r.qty;return `<div class="ln2"><span>${esc(nameOf('products',r.product))}</span><b class="q">${r.qty}</b><span>${money(pr)}</span><b>${money(r.total+(r.discount||0))}</b></div>`}).join('')}</div>
+    <div class="row"><span>إجمالي الكميات</span><b>${S(x.rows,r=>r.qty)} قطعة</b></div>
+    ${S(x.rows,r=>r.discount)>0?`<div class="row"><span>الخصم</span><span>- ${money(S(x.rows,r=>r.discount))}</span></div>`:''}
+    <div class="row"><span>الإجمالي</span><span class="amt">${money(x.total)}</span></div>
+    <div class="row"><span>${f?'المدفوع':'المسترد'}</span><span>${money(x.paid)}</span></div>${f?`<div class="row"><span>المتبقي</span><b>${money(rem)}</b></div>`:''}
+    <div class="ft"><button class="btn sm i" onclick="pinv('${k}','${x.inv}')">🖨 فاتورة</button><button class="btn sm w" onclick="editInv('${k}','${x.inv}')">✏️ تعديل</button><button class="btn sm d" onclick="del('${k}','${x.inv}')">🗑 حذف</button></div></div>`}).join('');
+  return `<div class="bar"><h1>${m.i} ${m.t}</h1><div><button class="btn i" onclick="print()">🖨 طباعة</button><button class="btn p" onclick="openM('${k}')">➕ فاتورة جديدة</button></div></div>
+  ${perBar(k)}<div class="cards"><div class="card"><small>عدد الفواتير</small><b>${g.length}</b></div><div class="card"><small>الإجمالي</small><b>${money(T)}</b></div>${f?`<div class="card"><small>المتبقي</small><b>${money(R)}</b></div>`:''}</div>
+  <input id="q" placeholder="ابحث بالاسم أو المنتج أو رقم الفاتورة..." oninput="filt()"><div class="cl" id="tb">${cards||'<div class="cd">لا توجد بيانات</div>'}</div>`;
+}
+function pinv(k,id){
+  const g=invs(k).find(x=>x.inv==id);if(!g)return;const f=KT[k][2],title={sales:'فاتورة بيع',purchases:'فاتورة شراء',sret:'مرتجع بيع',pret:'مرتجع شراء'}[k];
+  const w=open('','_blank');if(!w){alert('اسمح بالنوافذ المنبثقة');return}
+  w.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><style>body{font-family:Tahoma;padding:24px}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border:1px solid #999;padding:8px;text-align:right}</style></head><body>${lgc(60)}<h2>${esc(db.cfg.name)}</h2><h3>${title}</h3><p>التاريخ: ${g.date}<br>${KT[k][0]}: ${esc(nameOf(KT[k][1],g.party))}</p><table><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${g.rows.map(r=>`<tr><td>${esc(nameOf('products',r.product))}</td><td>${r.qty}</td><td>${money(r.price??(r.total+(r.discount||0))/r.qty)}</td><td>${money(r.total+(r.discount||0))}</td></tr>`).join('')}</table><p>الخصم: ${money(S(g.rows,r=>r.discount))}<br>الصافي: <b>${money(g.total)}</b><br>${f?'المدفوع':'المسترد'}: ${money(g.paid)}${f?` — المتبقي: <b>${money(g.total-g.paid)}</b>`:''}</p></body></html>`);
+  w.document.close();setTimeout(()=>w.print(),400);
+}
+
+// ===== الواجهة الجديدة: تبويبات سفلية + كروت + شاشة رئيسية جديدة =====
+document.body.insertAdjacentHTML('beforeend','<nav id="tabs"></nav><button id="fab" onclick="openM(cur)"></button>');
+document.querySelector('.top').innerHTML='<b id="co2"></b><span><button class="btn" onclick="db.cfg.dark=db.cfg.dark?0:1;store();menu()">'+ic('🌓')+'</button><button class="btn" title="تسجيل خروج" onclick="logout()">'+I(P.out)+'</button></span>';
+document.querySelector('.side').insertAdjacentHTML('beforeend','<small>الحساب</small><a class="lo" onclick="logout()">'+I(P.out)+' تسجيل خروج</a>');
+const m1=menu,r1=render;
+menu=()=>{m1();tabs();$('co2').innerHTML=lg(22)+' '+esc(db.cfg.name);};
+render=()=>{r1();$('main').classList.toggle('lst',!!M[cur]);
+  document.querySelectorAll('#main table').forEach(tb=>{const h=[...tb.querySelectorAll('th')].map(x=>x.textContent);tb.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>td.dataset.l=h[i]||''))});};
+dash=()=>{
+  const t=today(),pm=x=>x.date.startsWith(t.slice(0,7)),net=f=>S(db.sales.filter(f),x=>x.total)-S(db.sret.filter(f),x=>x.total);
+  const st=[['مبيعات الشهر',net(pm),'📅'],['أرباح الشهر',profit(pm),'💹'],['ديون العملاء',S(db.customers,c=>bal('customers',c.id)),'👥'],['مستحق للموردين',S(db.suppliers,c=>bal('suppliers',c.id)),'🏭'],['مصروفات الشهر',S(db.expenses.filter(pm),x=>x.amount),'💸'],['قيمة المخزون',S(db.products,p=>p.stock*p.cost),'📦']];
+  const days=[...Array(7)].map((_,i)=>{const d=ld(new Date(Date.now()-(6-i)*864e5));return [d,net(x=>x.date==d)]}),mx=Math.max(...days.map(d=>d[1]),1);
+  const low=db.products.filter(p=>p.stock<=(p.min||0)),rec=invs('sales').slice(-5).reverse();
+  const qa=[['sales','🧾','بيع'],['purchases','🛍','شراء'],['cpay','💰','تحصيل'],['expenses','🧮','مصروف']];
+  return `${dfw()}${bkw()}<div class="hero"><small>رصيد الخزنة</small><b>${money(cash())} <i>ج.م</i></b><span>مبيعات اليوم: ${money(net(x=>x.date==t))} ج.م</span></div>
+  <div class="qa">${qa.map(q=>`<button onclick="go('${q[0]}');openM('${q[0]}')">${q[1]}<span>${q[2]}</span></button>`).join('')}</div>
+  <div class="strip">${st.map(c=>`<div class="card"><small>${c[2]} ${c[0]}</small><b>${money(c[1])}</b></div>`).join('')}</div>
+  <div class="pan"><h3>📈 آخر 7 أيام</h3><div class="chart">${days.map(d=>`<div class="col" title="${money(d[1])}"><i style="height:${Math.max(d[1],0)/mx*85}%"></i>${d[0].slice(5)}</div>`).join('')}</div></div>
+  ${low.length?`<div class="pan"><h3>⚠️ نقص المخزون</h3>${low.map(p=>`<div>${esc(p.name)} <span class="bd r">المتبقي ${p.stock}</span></div>`).join('')}</div>`:''}
+  <div class="pan"><h3>🧾 آخر الفواتير</h3>${rec.map(x=>`<div>${x.date} — ${esc(nameOf('customers',x.party))} — <b>${money(x.total)}</b></div>`).join('')||'<small>لا توجد فواتير</small>'}</div>`;
+};
+function tabs(){
+  const all=MENU.filter(m=>m[0]!='#').map(m=>typeof m=='string'?[m,M[m].i,M[m].t]:m);
+  $('top').appendChild($('tabs'));
+  $('tabs').innerHTML=ic(all.map(([k,i,n])=>`<a class="${k==cur?'on':''}" onclick="go('${k}')">${i} ${n}</a>`).join(''));
+  $('fab').style.display=M[cur]?'flex':'none';$('fab').innerHTML=ic('➕');
+  const a=document.querySelector('#tabs a.on');if(a)$('tabs').scrollLeft=a.offsetLeft-$('tabs').clientWidth/2+a.offsetWidth/2;
+}
+document.querySelector('.top').insertAdjacentHTML('afterbegin','<button class="btn" id="hb" onclick="tg()">'+ic('☰')+'</button>');
+const bkw=()=>(db.sales.length+db.purchases.length+db.products.length>0&&(!db.cfg.bk||Date.now()-db.cfg.bk>6048e5))?'<div class="pan" style="background:#fdf0d5;color:#8a5a00">⚠️ لم تأخذ نسخة احتياطية منذ أكثر من أسبوع. من الإعدادات ⬇ نسخة احتياطية</div>':'';
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+fsInit();
+// ===== قفل الدخول: تجزئة كلمة السر (SHA-256 مملّح ومكرّر) =====
+const sha = (() => {
+  const K = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+  const W = new Uint32Array(64);
+  return bytes => {
+    const l = bytes.length, n = (((l + 9) >> 6) + ((l + 9) & 63 ? 1 : 0)) << 6, m = new Uint8Array(n);
+    m.set(bytes); m[l] = 0x80;
+    const dv = new DataView(m.buffer); dv.setUint32(n - 4, l * 8 >>> 0); dv.setUint32(n - 8, Math.floor(l / 0x20000000));
+    let a0 = 0x6a09e667, b0 = 0xbb67ae85, c0 = 0x3c6ef372, d0 = 0xa54ff53a, e0 = 0x510e527f, f0 = 0x9b05688c, g0 = 0x1f83d9ab, h0 = 0x5be0cd19;
+    for (let o = 0; o < n; o += 64) {
+      for (let i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const x = W[i - 15], y = W[i - 2];
+        W[i] = (W[i - 16] + (((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3)) + W[i - 7] + (((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10))) >>> 0;
+      }
+      let a = a0, b = b0, c = c0, d = d0, e = e0, f = f0, g = g0, h = h0;
+      for (let i = 0; i < 64; i++) {
+        const t1 = (h + (((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7))) + ((e & f) ^ (~e & g)) + K[i] + W[i]) >>> 0;
+        const t2 = ((((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10))) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+        h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+      }
+      a0 = (a0 + a) >>> 0; b0 = (b0 + b) >>> 0; c0 = (c0 + c) >>> 0; d0 = (d0 + d) >>> 0; e0 = (e0 + e) >>> 0; f0 = (f0 + f) >>> 0; g0 = (g0 + g) >>> 0; h0 = (h0 + h) >>> 0;
+    }
+    const out = new Uint8Array(32), ov = new DataView(out.buffer);
+    [a0, b0, c0, d0, e0, f0, g0, h0].forEach((v, i) => ov.setUint32(i * 4, v));
+    return out;
+  };
+})();
+const hex = u => [...u].map(x => x.toString(16).padStart(2, '0')).join('');
+const U8 = s => new TextEncoder().encode(s);
+const cat = (...a) => { const o = new Uint8Array(a.reduce((s, x) => s + x.length, 0)); let p = 0; a.forEach(x => { o.set(x, p); p += x.length; }); return o; };
+const hp = (pw, salt) => { const s = U8(salt), p = U8(pw); let h = sha(cat(s, p)); for (let i = 0; i < 40000; i++) h = sha(cat(h, s, p)); return hex(h); };
+const rnd = n => { const a = new Uint8Array(n); try { crypto.getRandomValues(a); } catch (e) { for (let i = 0; i < n; i++) a[i] = Math.random() * 256; } return a; };
+
+// ===== الدخول بيوزر وكلمة سر + الشعار =====
+const DEF_U = 'admin', DEF_P = 'Acc@2026', RA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let dlgCb = null;
+const hx = n => hex(rnd(n));
+const mkAuth = (u, pw, def) => { const s = def ? 'acc-default-salt' : hx(16); return {u, s, h: hp(pw, s), def: def ? 1 : 0}; };
+function ensureAuth(){ const a = db.cfg.auth; if (!a || typeof a.u != 'string' || typeof a.s != 'string' || typeof a.h != 'string') db.cfg.auth = mkAuth(DEF_U, DEF_P, 1); }
+const okLogo = s => typeof s == 'string' && s.length < 1.5e6 && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(s);
+const lg = (h = 22) => okLogo(db.cfg.logo) ? `<img class="lg" alt="" style="height:${h}px" src="${esc(db.cfg.logo)}">` : I(P.shop);
+const lgc = h => okLogo(db.cfg.logo) ? `<img alt="" style="height:${h}px;margin-left:10px;vertical-align:middle" src="${esc(db.cfg.logo)}">` : '';
+const FAV = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1f3a5f"/><g fill="none" stroke="#c9a24b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24h36v26H14zM24 24v-7h16v7M14 38h36"/></g></svg>');
+function brand(){ $('fav').href = okLogo(db.cfg.logo) ? db.cfg.logo : FAV; try { window.api && window.api.icon && window.api.icon(okLogo(db.cfg.logo) ? db.cfg.logo : ''); } catch (e) {} }
+function bk(){ const c = Object.assign({}, db.cfg); delete c.auth; return JSON.stringify(Object.assign({}, db, {cfg:c})); }
+function adopt(n){
+  Object.keys(M).forEach(k => n[k] = Array.isArray(n[k]) ? n[k] : []);
+  n.cfg = n.cfg && typeof n.cfg == 'object' && !Array.isArray(n.cfg) ? n.cfg : {name:'شركتي', dark:0};
+  n.cfg.auth = db.cfg.auth;                                   // الاسترجاع لا يغيّر بيانات الدخول الحالية
+  if (!okLogo(n.cfg.logo)) { if (okLogo(db.cfg.logo)) n.cfg.logo = db.cfg.logo; else delete n.cfg.logo; }
+  return n;
+}
+function wipe(keep){
+  try { localStorage.removeItem('acc2'); if (keep) localStorage.setItem('acc2', JSON.stringify(keep)); } catch (e) {}
+  try { window.api && window.api.save(keep ? JSON.stringify(keep) : '{}'); } catch (e) {}
+  if (!keep) try { sessionStorage.removeItem('acc_in'); } catch (e) {}
+  location.reload();
+}
+const pwf = (id, ac) => `<div class="pw"><input id="${id}" type="password" dir="ltr" autocomplete="${ac}"><button type="button" class="eye" tabindex="-1" onclick="eye('${id}')">${I(P.eye)}</button></div>`;
+function eye(id){ const e = $(id); e.type = e.type == 'password' ? 'text' : 'password'; }
+const dfw = () => db.cfg.auth && db.cfg.auth.def ? `<div class="pan" style="background:#fbe3e1;color:#b3261e;cursor:pointer" onclick="go('set')">${I(P.lock)} بيانات الدخول لسه الافتراضية — اضغط هنا لتغييرها من الإعدادات.</div>` : '';
+
+const bad = (e, m) => { e.textContent = m; };
+
+// --- شاشة الدخول ---
+function showLogin(v){
+  document.documentElement.dataset.t = db.cfg.dark ? 'd' : '';
+  document.documentElement.classList.add('locked');
+  $('lock').style.display = 'flex'; lockView(v || 'in');
+}
+function lockView(v){
+  const head = `<div class="lkl">${okLogo(db.cfg.logo) ? `<img alt="" src="${esc(db.cfg.logo)}">` : I(P.shop)}</div><h2>${esc(db.cfg.name)}</h2>`;
+  $('lock').innerHTML = v == 'in' ? `<div class="lk">${head}<p>سجّل الدخول للمتابعة</p>
+    <form onsubmit="return doLogin()"><label for="lu">اسم المستخدم</label><input id="lu" dir="ltr" autocomplete="username" autocapitalize="none" spellcheck="false">
+    <label for="lp">كلمة السر</label>${pwf('lp', 'current-password')}<div class="lerr" id="le" role="alert"></div><button class="btn p lkb" type="submit">دخول</button></form>
+    <a class="lkf" onclick="lockView('forgot')">نسيت كلمة السر؟</a></div>`
+  : `<div class="lk">${head}<p>${db.cfg.auth.rh ? 'اكتب كود الاستعادة اللي اتعرضلك لما غيّرت بيانات الدخول، وحدد بيانات جديدة.' : 'لسه ماغيرتش بيانات الدخول، يعني لسه بتستخدم البيانات الافتراضية اللي في ملف التعليمات.'}</p>
+    ${db.cfg.auth.rh ? `<form onsubmit="return doRecover()"><label for="rc">كود الاستعادة</label><input id="rc" dir="ltr" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false">
+    <label for="nu">اسم مستخدم جديد</label><input id="nu" dir="ltr" autocomplete="off" spellcheck="false"><label for="np">كلمة سر جديدة</label>${pwf('np', 'new-password')}<label for="nk">تأكيد كلمة السر</label>${pwf('nk', 'new-password')}
+    <div class="lerr" id="le" role="alert"></div><button class="btn p lkb" type="submit">تعيين بيانات جديدة</button></form>` : ''}
+    <a class="lkf" onclick="lockView('in')">رجوع لشاشة الدخول</a><br><a class="lkf dg" onclick="wipeLock()">مش معايا الكود؟ مسح كل البيانات والبدء من جديد</a></div>`;
+  const x = $('lu') || $('rc'); if (x) x.focus();
+}
+let lgBusy = false;
+function doLogin(){
+  if (lgBusy) return false;
+  const e = $('le'), btn = document.querySelector('.lkb'), u = $('lu').value, p = $('lp').value;
+  if (!u.trim() || !p) { bad(e, 'اكتب اسم المستخدم وكلمة السر'); return false; }
+  lgBusy = true; bad(e, ''); const t = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'جاري التحقق…'; }
+  const done = () => { lgBusy = false; if (btn) { btn.disabled = false; btn.textContent = t; } };
+  requestAnimationFrame(() => setTimeout(() => {
+    try {
+      const a = db.cfg.auth, okU = u.trim().toLowerCase() == a.u.toLowerCase(), okP = hp(p, a.s) == a.h;
+      if (okU && okP) { done(); enter(); return; }
+      done(); bad(e, 'اسم المستخدم أو كلمة السر غير صحيحة'); $('lp').value = ''; $('lp').focus();
+    } catch (err) { done(); bad(e, 'حصل خطأ: ' + (err && err.message || err)); }
+  }, 30));
+  return false;
+}
+function enter(){ try { sessionStorage.setItem('acc_in', db.cfg.auth.h.slice(0, 24)); } catch (e) {} startApp(); }
+function startApp(){ $('lock').style.display = 'none'; $('lock').innerHTML = ''; document.documentElement.classList.remove('locked'); menu(); render(); }
+function logout(){
+  try { sessionStorage.removeItem('acc_in'); } catch (e) {}
+  closeM(); closeDlg(); $('main').innerHTML = ''; cur = 'dash'; showLogin();
+}
+function wipeLock(){ if (confirm('هتتمسح كل البيانات نهائيًا وبيانات الدخول هترجع للافتراضية! متأكد؟') && confirm('تأكيد أخير: مفيش رجوع إلا من نسخة احتياطية.')) wipe(null); }
+
+// --- كود الاستعادة ---
+const nc = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+function mkCode(){ const b = rnd(16); return [0, 1, 2, 3].map(i => [0, 1, 2, 3].map(j => RA[b[i * 4 + j] % 32]).join('')).join('-'); }
+function issueCode(){ const c = mkCode(), a = db.cfg.auth; a.rs = hx(16); a.rh = hp(nc(c), a.rs); return c; }
+function showCode(c, cb){
+  dlgCb = cb || null;
+  $('dlg').innerHTML = `<div class="dbx"><h3>${I(P.key)} كود الاستعادة</h3><p>ده الكود اللي هيرجّعلك الدخول لو نسيت كلمة السر. <b>احتفظ بيه في مكان آمن (ورقة أو صورة محفوظة)</b>. مش هيظهر تاني، ولو اتعمل كود جديد القديم بيبطل.</p>
+  <div class="cod" id="rcv">${esc(c)}</div><button class="btn i" onclick="cpy()">نسخ الكود</button><button class="btn p" onclick="closeDlg()">حفظته، تمام</button></div>`;
+  $('dlg').style.display = 'flex';
+}
+function closeDlg(){ $('dlg').style.display = 'none'; $('dlg').innerHTML = ''; if (dlgCb) { const f = dlgCb; dlgCb = null; f(); } }
+function cpy(){
+  const t = $('rcv').textContent, fb = () => { const r = document.createRange(); r.selectNodeContents($('rcv')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); } catch (e) {} };
+  try { navigator.clipboard.writeText(t).catch(fb); } catch (e) { fb(); }
+}
+function chkNew(u, p, k){
+  if (u.length < 3) return 'اسم المستخدم 3 حروف على الأقل';
+  if (p.length < 4) return 'كلمة السر 4 حروف أو أرقام على الأقل';
+  if (p != k) return 'تأكيد كلمة السر غير مطابق';
+  return '';
+}
+function doRecover(){
+  const e = $('le'), a = db.cfg.auth;
+  if (hp(nc($('rc').value), a.rs) != a.rh) { bad(e, 'كود الاستعادة غير صحيح'); return false; }
+  const u = $('nu').value.trim(), p = $('np').value, m = chkNew(u, p, $('nk').value); if (m) { e.textContent = m; return false; }
+  db.cfg.auth = mkAuth(u, p, p == DEF_P); const c = issueCode(); store();
+  showCode(c, enter); return false;
+}
+
+// --- من الإعدادات ---
+function authSec(){
+  const a = db.cfg.auth;
+  return `<h3>${I(P.lock)} بيانات الدخول</h3>${a.def ? '<div class="wn">بيانات الدخول لسه الافتراضية — غيّرها دلوقتي عشان البرنامج يتأمّن.</div>' : ''}
+  <small style="color:var(--m)">${a.rh ? 'كود الاستعادة: متسجّل ✓' : 'كود الاستعادة: لسه مفيش (بيتعمل أول ما تغيّر بيانات الدخول)'}</small><br>
+  <label>اسم المستخدم</label><input id="au" dir="ltr" autocomplete="off" spellcheck="false" value="${esc(a.u)}">
+  <label>كلمة السر الحالية (مطلوبة لأي تغيير)</label>${pwf('ac', 'current-password')}
+  <label>كلمة سر جديدة (سيبها فاضية لو مش عايز تغيّرها)</label>${pwf('an', 'new-password')}
+  <label>تأكيد كلمة السر الجديدة</label>${pwf('ak', 'new-password')}
+  <button class="btn p" onclick="chgAuth()">💾 حفظ بيانات الدخول</button><button class="btn i" onclick="newCode()">${I(P.key)} كود استعادة جديد</button><button class="btn n" onclick="logout()">${I(P.out)} تسجيل خروج</button><hr>`;
+}
+function chgAuth(){
+  const a = db.cfg.auth, u = $('au').value.trim(), cur = $('ac').value, np = $('an').value, nk = $('ak').value;
+  if (hp(cur, a.s) != a.h) { alert('كلمة السر الحالية غير صحيحة'); return; }
+  if (!np && !nk && u.toLowerCase() == a.u.toLowerCase() && u == a.u) { alert('مفيش أي تغيير'); return; }
+  const pw = np || cur, m = chkNew(u, pw, np ? nk : pw); if (m) { alert(m); return; }
+  const rs = a.rs, rh = a.rh, first = !rh;
+  db.cfg.auth = mkAuth(u, pw, pw == DEF_P); if (rh) { db.cfg.auth.rs = rs; db.cfg.auth.rh = rh; }
+  const c = pw == DEF_P ? null : first ? issueCode() : null;
+  store(); try { sessionStorage.setItem('acc_in', db.cfg.auth.h.slice(0, 24)); } catch (e) {}
+  render(); alert('تم حفظ بيانات الدخول'); if (c) showCode(c);
+}
+function newCode(){
+  const a = db.cfg.auth; if (hp($('ac').value, a.s) != a.h) { alert('اكتب كلمة السر الحالية الأول'); return; }
+  if (a.def) { alert('غيّر بيانات الدخول الافتراضية الأول، وبعدها يتعمل كود الاستعادة تلقائيًا'); return; }
+  const c = issueCode(); store(); render(); showCode(c);
+}
+function logoSec(){
+  return `<h3>${I(P.img)} شعار الشركة</h3><div class="lgp">${lg(56)}</div><small style="color:var(--m)">بيظهر في شاشة الدخول والقائمة والفواتير وأيقونة التبويب/النافذة. الأفضل صورة مربعة PNG بخلفية شفافة.</small><br>
+  <input type="file" id="lf" accept="image/*" hidden onchange="setLogo(this.files[0]);this.value=''"><button class="btn p" onclick="$('lf').click()">اختيار شعار</button>${okLogo(db.cfg.logo) ? '<button class="btn d" onclick="rmLogo()">إزالة الشعار</button>' : ''}<hr>`;
+}
+function setLogo(f){
+  if (!f) return;
+  if (!/^image\//.test(f.type)) { alert('اختار ملف صورة'); return; }
+  if (f.size > 8e6) { alert('الصورة كبيرة، اختار صورة أصغر من 8 ميجا'); return; }
+  const fr = new FileReader();
+  fr.onload = () => { const im = new Image();
+    im.onload = () => {
+      let w = im.naturalWidth || 256, h = im.naturalHeight || 256; const k = Math.min(1, 256 / Math.max(w, h)); w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+      const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h);
+      const d = c.toDataURL('image/png'); if (!okLogo(d)) { alert('تعذر استخدام الصورة'); return; }
+      db.cfg.logo = d; store(); brand(); menu(); render();
+    };
+    im.onerror = () => alert('تعذر قراءة الصورة'); im.src = fr.result; };
+  fr.onerror = () => alert('تعذر قراءة الملف'); fr.readAsDataURL(f);
+}
+function rmLogo(){ delete db.cfg.logo; store(); brand(); menu(); render(); }
+
+function boot(){
+  ensureAuth(); brand();
+  let ok = false; try { ok = sessionStorage.getItem('acc_in') == db.cfg.auth.h.slice(0, 24); } catch (e) {}
+  if (ok) { document.documentElement.dataset.t = db.cfg.dark ? 'd' : ''; startApp(); } else showLogin();
+}
+
+// ===== تعديلات نسخة الأندرويد (APK) =====
+if (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) {
+  const natShare = async (name, text, title) => {
+    const P = Capacitor.Plugins, r = await P.Filesystem.writeFile({path: name, data: text, directory: 'CACHE', encoding: 'utf8'});
+    await P.Share.share({title: title, dialogTitle: title, url: r.uri});
+  };
+  const natErr = e => { const m = String(e && e.message || e || ''); if (!/cancel|dismiss/i.test(m)) alert('تعذر مشاركة الملف: ' + m); };
+  exportData = async function(){ db.cfg.bk = Date.now(); store(); try { await natShare('backup-' + today() + '.json', bk(), 'نسخة احتياطية - ' + db.cfg.name); } catch (e) { natErr(e); } };
+  shareBackup = exportData;
+  csv = async function(){
+    const [h, r] = REP[rk][1](), t = [h, ...r].map(a => a.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
+    try { await natShare('report-' + today() + '.csv', '\ufeff' + t, 'تقرير'); } catch (e) { natErr(e); }
+  };
+  // الطباعة مش متاحة في الأندرويد: الفاتورة بتتشارك كملف HTML تفتحه في المتصفح وتطبعه أو تبعته واتساب
+  window.open = function(){
+    let html = '';
+    return {document: {write: h => { html += h; }, close(){}}, print(){ natShare('invoice-' + Date.now() + '.html', html, 'فاتورة').catch(natErr); }};
+  };
+}
+// ===== المزامنة عبر Google Drive (مجلد التطبيق المخفي) + دمج السجلات =====
+// الفكرة: كل سجل له رقم فريد + وقت آخر تعديل (_m). الحذف بيتسجّل كـ "شاهد حذف" في db._del.
+// عند المزامنة بنقارن سجل بسجل: الأحدث يكسب، والفواتير الجديدة من الجهازين بتتجمّع، والمخزون بيتحسب من الحركات.
+const SYNC_FILE = 'accounts-sync.json', SYNC_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+let snap = null, syncing = false, syncTimer = 0, gTok = null, gTokExp = 0, gTC = null, gMsg = '';
+const jx = r => JSON.stringify(r, (k, v) => k == '_m' ? undefined : v);
+function snapAll(){ snap = {}; Object.keys(M).forEach(c => { snap[c] = {}; db[c].forEach(r => snap[c][r.id] = jx(r)); }); snap.cfg = jx({n: db.cfg.name, c: db.cfg.cash0}); }
+function track(){            // بيتنادى قبل كل حفظ: يحدد السجلات اللي اتعدلت أو اتحذفت
+  if (!snap) return snapAll();
+  const now = Date.now(); db._del = db._del || {};
+  Object.keys(M).forEach(c => {
+    const cur = {}; db._del[c] = db._del[c] || {};
+    db[c].forEach(r => { const j = jx(r); cur[r.id] = 1; if (snap[c][r.id] !== j) r._m = now; delete db._del[c][r.id]; });
+    Object.keys(snap[c]).forEach(id => { if (!cur[id]) db._del[c][id] = now; });
+  });
+  const cj = jx({n: db.cfg.name, c: db.cfg.cash0}); if (cj !== snap.cfg) db.cfgM = now;
+  snapAll();
+}
+const mvOf = (x, pid) => S(['sales', 'purchases', 'sret', 'pret'].flatMap(k => x[k].filter(r => r.product == pid).map(r => ST[k] * r.qty)), v => v) + S(x.adj.filter(r => r.product == pid), r => r.diff);
+function mergeDb(L, R){
+  const out = {cfg: L.cfg, _del: {}}, DAY = 864e5 * 180, now = Date.now();
+  Object.keys(M).forEach(c => {
+    const dl = Object.assign({}, (R._del || {})[c]), dr = (L._del || {})[c] || {};
+    Object.keys(dr).forEach(id => dl[id] = Math.max(dl[id] || 0, dr[id]));
+    const mp = new Map();
+    (R[c] || []).forEach(r => mp.set(r.id, {r, side: 'R'}));
+    (L[c] || []).forEach(r => { const o = mp.get(r.id); if (!o || (r._m || 0) >= (o.r._m || 0)) mp.set(r.id, {r, side: 'L'}); });
+    out[c] = []; out._del[c] = {};
+    mp.forEach(({r, side}, id) => { if ((dl[id] || 0) > (r._m || 0)) return; r._side = side; out[c].push(r); });
+    Object.keys(dl).forEach(id => { if (now - dl[id] < DAY) out._del[c][id] = dl[id]; });
+  });
+  const Lc = {}, Rc = {}; Object.keys(M).forEach(c => { Lc[c] = L[c] || []; Rc[c] = R[c] || []; });
+  out.products.forEach(p => {                       // المخزون = الرصيد الافتتاحي + حركات الفواتير والجرد بعد الدمج
+    const src = p._side == 'L' ? Lc : Rc, s0 = r2((+p.stock || 0) - mvOf(src, p.id));
+    p.stock = r2(s0 + mvOf(out, p.id));
+  });
+  Object.keys(M).forEach(c => out[c].forEach(r => delete r._side));
+  const rs = R.shared;
+  if (rs && (rs.m || 0) > (L.cfgM || 0)) { out.cfg = Object.assign({}, L.cfg, {name: rs.name, cash0: rs.cash0}); out.cfgM = rs.m; } else out.cfgM = L.cfgM || 0;
+  return out;
+}
+const payload = () => { const p = {v: 1, at: Date.now(), _del: db._del || {}, shared: {name: db.cfg.name, cash0: db.cfg.cash0, m: db.cfgM || 0}}; Object.keys(M).forEach(c => p[c] = db[c]); return p; };
+
+// --- Google ---
+const gs = () => ({id: (db.cfg.gcid || '').trim(), mail: (db.cfg.gmail || '').trim(), on: !!db.cfg.gsync});
+function gLoad(){ return new Promise((res, rej) => { if (window.google && google.accounts && google.accounts.oauth2) return res(); const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = () => res(); s.onerror = () => rej(new Error('تعذر تحميل خدمة جوجل (تأكد من الإنترنت)')); document.head.appendChild(s); }); }
+async function gToken(interactive){
+  if (gTok && Date.now() < gTokExp - 60000) return gTok;
+  const c = gs(); if (!c.id) throw new Error('اكتب Client ID أولًا');
+  await gLoad();
+  return new Promise((res, rej) => {
+    gTC = google.accounts.oauth2.initTokenClient({client_id: c.id, scope: SYNC_SCOPE, login_hint: c.mail || undefined,
+      callback: r => { if (r.error) return rej(new Error(r.error_description || r.error)); gTok = r.access_token; gTokExp = Date.now() + (+r.expires_in || 3600) * 1000; res(gTok); },
+      error_callback: e => rej(new Error(e && e.type == 'popup_blocked_by_browser' ? 'المتصفح منع نافذة جوجل: اضغط زر المزامنة بنفسك' : (e && e.type) || 'فشل الاتصال بجوجل'))});
+    gTC.requestAccessToken({prompt: interactive ? (db.cfg.gcons ? '' : 'consent') : ''});
+  });
+}
+async function gApi(url, opt, tok){ const r = await fetch(url, Object.assign({}, opt, {headers: Object.assign({Authorization: 'Bearer ' + tok}, (opt || {}).headers)})); if (r.status == 401) { gTok = null; throw new Error('انتهت الجلسة، اضغط مزامنة الآن'); } if (!r.ok) throw new Error('خطأ Drive ' + r.status); return r; }
+function setMsg(m){ gMsg = m; const e = document.getElementById('gmsg'); if (e) e.textContent = m; }
+function syncSoon(){ if (!gs().on || !gs().id) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(false), 3000); }
+async function syncNow(manual){
+  if (syncing) return; const c = gs(); if (!c.id || (!c.on && !manual)) return;
+  if (!navigator.onLine) { setMsg('⏳ مفيش إنترنت: هتتم المزامنة أول ما يرجع'); return; }
+  if ($('modal') && $('modal').style.display == 'flex') { syncTimer = setTimeout(() => syncNow(false), 8000); return; }  // مانتعطّلش وأنت بتكتب
+  syncing = true; setMsg('🔄 جاري المزامنة...');
+  try {
+    const tok = await gToken(manual);
+    const q = encodeURIComponent("name='" + SYNC_FILE + "'"), ls = await (await gApi('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q=' + q, {}, tok)).json();
+    const fid = ls.files && ls.files[0] && ls.files[0].id; let changed = false;
+    if (fid) {
+      const rem = await (await gApi('https://www.googleapis.com/drive/v3/files/' + fid + '?alt=media', {}, tok)).json();
+      if (rem && rem.v == 1) {
+        track(); const before = JSON.stringify(payload());
+        try { localStorage.setItem('acc2_pre_sync', JSON.stringify(db)); } catch (e) {}   // نسخة أمان قبل الدمج
+        const m = mergeDb(db, rem); db.cfg = m.cfg; db._del = m._del; db.cfgM = m.cfgM; Object.keys(M).forEach(k => db[k] = m[k]);
+        changed = JSON.stringify(payload()) !== before;
+        snapAll(); try { localStorage.setItem('acc2', JSON.stringify(db)); } catch (e) {}
+        if (window.api) try { window.api.save(JSON.stringify(db)); } catch (e) {}
+        if (changed) { menu(); render(); }
+      }
+    }
+    const body = JSON.stringify(payload());
+    if (fid) await gApi('https://www.googleapis.com/upload/drive/v3/files/' + fid + '?uploadType=media', {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body}, tok);
+    else { const bd = 'b' + Date.now(); await gApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {method: 'POST', headers: {'Content-Type': 'multipart/related; boundary=' + bd},
+      body: '--' + bd + '\r\nContent-Type: application/json\r\n\r\n' + JSON.stringify({name: SYNC_FILE, parents: ['appDataFolder']}) + '\r\n--' + bd + '\r\nContent-Type: application/json\r\n\r\n' + body + '\r\n--' + bd + '--'}, tok); }
+    db.cfg.gcons = 1; db.cfg.glast = Date.now(); try { localStorage.setItem('acc2', JSON.stringify(db)); } catch (e) {}
+    setMsg('✅ تمت المزامنة ' + new Date().toLocaleTimeString('ar-EG') + (changed ? ' (اتدمج تعديلات من جهاز تاني)' : ''));
+  } catch (e) { setMsg('⚠️ ' + (e && e.message || e)); }
+  syncing = false;
+}
+function gSave(){ db.cfg.gcid = $('gcid').value.trim(); db.cfg.gmail = $('gmail').value.trim(); store(); setMsg('تم الحفظ'); }
+function gConnect(){ gSave(); if (!gs().id) return setMsg('⚠️ اكتب Client ID'); db.cfg.gsync = 1; store(); syncNow(true); }
+function gOff(){ db.cfg.gsync = 0; gTok = null; store(); setMsg('تم إيقاف المزامنة (بياناتك على الجهاز زي ما هي)'); render(); }
+function syncSec(){ const c = gs(); return `<h3>☁️ المزامنة بين الأجهزة (Google Drive)</h3>
+  <small style="color:var(--m)">بيانات كل واحد بتتحفظ في مساحة مخفية على درايف بتاعه، والجهازين بيتزامنوا تلقائيًا لما يكون فيه إنترنت. تسجيل الدخول للبرنامج يفضل بالاسم وكلمة السر زي ما هو. اللوجو والدخول مش بيتزامنوا.</small>
+  <label>الإيميل (Gmail)</label><input id="gmail" type="email" value="${esc(c.mail)}" placeholder="name@gmail.com">
+  <label>Google Client ID</label><input id="gcid" value="${esc(c.id)}" placeholder="xxxx.apps.googleusercontent.com" dir="ltr">
+  <button class="btn p" onclick="gConnect()">🔗 ${c.on ? 'إعادة الاتصال' : 'تفعيل المزامنة'}</button><button class="btn i" onclick="gSave();syncNow(true)">🔄 مزامنة الآن</button>${c.on ? '<button class="btn n" onclick="gOff()">إيقاف</button>' : ''}
+  <div id="gmsg" style="margin:6px 0;color:var(--m)">${esc(gMsg || (c.on ? (db.cfg.glast ? 'آخر مزامنة: ' + new Date(db.cfg.glast).toLocaleString('ar-EG') : 'مفعّلة') : 'غير مفعّلة'))}</div><hr>`; }
+window.addEventListener('online', () => syncSoon());
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncSoon(); });
+setInterval(() => syncSoon(), 120000);
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}   // يمنع المتصفح من مسح البيانات تلقائيًا
+snapAll();
+setTimeout(() => syncSoon(), 1500);
+
+boot();
+try{if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)&&!window.api&&!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+</script>
+</body>
+</html>
